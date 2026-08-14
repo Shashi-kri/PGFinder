@@ -1,0 +1,101 @@
+/* ServiceCard — real background photo, dark gradient overlay, glass icon */
+
+.card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+}
+
+/* Full-bleed background photo */
+.bgImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+  z-index: 0;
+}
+.card:hover .bgImage { transform: scale(1.06); }
+
+/* Dark gradient overlay — bottom heavy for text readability */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Bottom 60% is darkened strongly, top is lighter */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.30) 0%,
+    rgba(0, 0, 0, 0.52) 45%,
+    rgba(0, 0, 0, 0.82) 100%
+  );
+}
+
+/* Icon circle — glass style */
+.iconWrap {
+  position: relative;
+  z-index: 2;
+  width: 52px; height: 52px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255,255,255,0.30);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 28px 24px 0;
+  transition: background 0.25s, transform 0.25s;
+}
+.card:hover .iconWrap {
+  background: rgba(255,255,255,0.28);
+  transform: scale(1.1);
+}
+.icon { font-size: 22px; }
+
+/* Text body */
+.body {
+  position: relative;
+  z-index: 2;
+  padding: 16px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end; /* push to bottom */
+  margin-top: auto;
+}
+
+.label {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.3px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.55;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+.arrow {
+  font-size: 20px;
+  color: rgba(255,255,255,0.9);
+  margin-top: 10px;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+.card:hover .arrow { transform: translateX(6px); }

@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "PG Finder",
+    "slug": "pg-finder-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "pgfinder",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We use your location to show nearby PGs, flats, flatmates, and mess services."
+      },
+      "config": {
+        "googleMapsApiKey": "YOUR_IOS_GOOGLE_MAPS_KEY"
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_ANDROID_GOOGLE_MAPS_KEY"
+        }
+      }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "We use your location to show nearby listings."
+        }
+      ]
+    ]
+  }
+}

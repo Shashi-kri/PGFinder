@@ -1,0 +1,30 @@
+.bar { display: flex; flex-direction: column; gap: 12px; }
+
+.cta { justify-content: center; border-radius: var(--radius-md) !important; padding: 14px !important; font-size: 16px !important; }
+
+.waBtn {
+  justify-content: center;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+.waBtn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.saveBtn { justify-content: center; }
+.saved { border-color: #ef4444; color: #ef4444; }
+
+.noContact {
+  text-align: center;
+  padding: 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+}
+
+.note { font-size: 12px; color: var(--text-faint); text-align: center; }

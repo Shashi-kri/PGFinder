@@ -1,0 +1,10 @@
+.wrap {
+  line-height: 0;
+  overflow: hidden;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 88px;
+}
