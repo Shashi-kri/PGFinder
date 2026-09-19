@@ -6,18 +6,31 @@ import { useAuth } from '@/context/AuthContext';
 import styles from '../auth.module.css';
 
 const FEATURES = [
-  { icon: '🔍', title: 'Smart Search', sub: 'Filter by type, food, budget & distance' },
-  { icon: '✅', title: 'Verified Listings', sub: 'Real photos, every listing reviewed' },
-  { icon: '💬', title: 'Direct Contact', sub: 'Connect with owners — no middlemen' },
+  {
+    icon: '🔍',
+    title: 'Smart Search',
+    sub: 'Filter by location, type, budget and food preference.',
+  },
+  {
+    icon: '📋',
+    title: 'Detailed Listings',
+    sub: 'Photos, amenities and pricing — all in one place.',
+  },
+  {
+    icon: '💬',
+    title: 'Direct Contact',
+    sub: 'Connect with property owners directly. No middlemen.',
+  },
 ];
 
 export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [showPwd, setShowPwd]   = useState(false);
+  const [error, setError]       = useState('');
+  const [loading, setLoading]   = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,18 +51,18 @@ export default function LoginPage() {
       {/* Left decorative panel */}
       <div className={styles.leftPanel}>
         <div className={styles.leftContent}>
-          <div className={styles.leftLogo}>
+          <Link href="/" className={styles.leftLogo}>
             <span className={styles.leftLogoIcon}>🏠</span>
             <span className={styles.leftLogoText}>
               PGFinder<span className={styles.leftLogoDot}>.</span>
             </span>
-          </div>
+          </Link>
           <h2 className={styles.leftHeading}>
             Your next home is<br />
-            <span className={styles.leftAccent}>one click away</span>
+            <span className={styles.leftAccent}>one search away.</span>
           </h2>
           <p className={styles.leftSub}>
-            Join thousands of people who found their perfect PG, flat, or flatmate on PGFinder.
+            Find PGs, flats and flatmates near your college or workplace. Connect directly with owners.
           </p>
           <div className={styles.leftFeatures}>
             {FEATURES.map(f => (
@@ -73,31 +86,66 @@ export default function LoginPage() {
               🏠 PGFinder<span className={styles.logoDot}>.</span>
             </Link>
             <h1 className={styles.title}>Welcome back</h1>
-            <p className={styles.sub}>Sign in to your account</p>
+            <p className={styles.sub}>Sign in to your account to continue</p>
           </div>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
-            {error && <div className={styles.error}>⚠️ {error}</div>}
+          <form onSubmit={handleSubmit} className={styles.form} noValidate>
+            {error && (
+              <div className={styles.error} role="alert">
+                <span aria-hidden="true">⚠️</span> {error}
+              </div>
+            )}
 
             <div className={styles.field}>
-              <label className={styles.label}>Email address</label>
-              <input type="email" className="input" placeholder="you@example.com"
-                value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <label htmlFor="login-email" className={styles.label}>Email address</label>
+              <input
+                id="login-email"
+                type="email"
+                className="input"
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
             </div>
 
             <div className={styles.field}>
               <div className={styles.labelRow}>
-                <label className={styles.label}>Password</label>
+                <label htmlFor="login-password" className={styles.label}>Password</label>
                 <Link href="/auth/forgot-password" className={styles.forgotLink}>
                   Forgot password?
                 </Link>
               </div>
-              <input type="password" className="input" placeholder="••••••••"
-                value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <div className={styles.inputWrap}>
+                <input
+                  id="login-password"
+                  type={showPwd ? 'text' : 'password'}
+                  className="input"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className={styles.eyeBtn}
+                  onClick={() => setShowPwd(v => !v)}
+                  aria-label={showPwd ? 'Hide password' : 'Show password'}
+                >
+                  {showPwd ? '🙈' : '👁️'}
+                </button>
+              </div>
             </div>
 
-            <button type="submit" className={`btn btn-primary ${styles.submitBtn}`} disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In →'}
+            <button
+              type="submit"
+              id="login-submit"
+              className={`btn btn-primary ${styles.submitBtn}`}
+              disabled={loading}
+            >
+              {loading ? 'Signing in…' : 'Sign In →'}
             </button>
           </form>
 

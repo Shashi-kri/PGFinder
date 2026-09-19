@@ -1,10 +1,8 @@
 /* ══════════════════════════════════════════════════════════
-   Listing Detail — Synchronized to PGFinder Design System
+   Listing Detail — PGFinder Design System
    ══════════════════════════════════════════════════════════ */
 
 .page { padding: 32px 0 100px; }
-
-/* Gallery is handled by ListingGallery.module.css */
 
 /* ── Breadcrumb ──────────────────────────────────────────── */
 .breadcrumb {
@@ -12,34 +10,38 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 24px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-muted);
   flex-wrap: wrap;
 }
-
 .breadcrumbLink {
   color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: color 0.2s;
+  transition: color 0.18s;
 }
 .breadcrumbLink:hover { color: var(--primary-light); }
 .breadcrumbSep { color: var(--text-faint); }
-.breadcrumbCurrent { color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+.breadcrumbCurrent {
+  color: var(--text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
 
-/* ── Layout ──────────────────────────────────────────────── */
+/* ── Two-column layout ───────────────────────────────────── */
 .layout {
   display: grid;
   grid-template-columns: 1fr 340px;
-  gap: 32px;
+  gap: 36px;
   align-items: start;
   margin-top: 28px;
 }
 
-/* ── Main content ────────────────────────────────────────── */
+/* ── Main ────────────────────────────────────────────────── */
 .listingHeader { margin-bottom: 24px; }
 .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
 .title {
   font-size: clamp(24px, 4vw, 36px);
   font-weight: 900;
@@ -48,28 +50,30 @@
   margin-bottom: 10px;
   line-height: 1.2;
 }
+
 .address {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-muted);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
-/* ── Rent Card ───────────────────────────────────────────── */
+/* ── Rent card ───────────────────────────────────────────── */
 .rentCard {
   background: var(--surface);
   border: 1.5px solid rgba(13,148,136,0.25);
   border-radius: var(--radius-xl);
   padding: 22px 28px;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: relative;
   overflow: hidden;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-
 .rentCard::before {
   content: '';
   position: absolute;
@@ -77,31 +81,35 @@
   height: 2px;
   background: linear-gradient(90deg, var(--primary), var(--primary-light));
 }
-
 .rentLeft { display: flex; align-items: baseline; gap: 4px; }
 .rent {
-  font-size: 40px;
+  font-size: 42px;
   font-weight: 900;
   color: var(--primary-light);
   letter-spacing: -2px;
 }
 .rentPer { font-size: 15px; color: var(--text-muted); }
+
 .deposit {
-  font-size: 13px;
-  color: var(--text-muted);
-  background: var(--bg);
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.depositLabel { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; }
+.depositAmount {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
 }
 
 /* ── Sections ────────────────────────────────────────────── */
-.section { margin-bottom: 36px; }
+.section { margin-bottom: 40px; }
 .sectionTitle {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--text);
-  margin-bottom: 16px;
+  margin-bottom: 18px;
   padding-left: 14px;
   border-left: 3px solid var(--primary);
   line-height: 1;
@@ -110,6 +118,7 @@
   font-size: 15px;
   color: var(--text-muted);
   line-height: 1.8;
+  white-space: pre-line;
 }
 
 /* ── Amenities ───────────────────────────────────────────── */
@@ -122,42 +131,45 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 12px 14px;
+  padding: 11px 14px;
   transition: border-color 0.2s, background 0.2s;
 }
 .amenityItem:hover {
-  border-color: rgba(34,197,94,0.3);
-  background: rgba(34,197,94,0.05);
+  border-color: rgba(13,148,136,0.3);
+  background: rgba(13,148,136,0.04);
 }
 
-.amenityCheckWrap {
-  width: 26px; height: 26px;
-  border-radius: var(--radius-sm);
-  background: rgba(34,197,94,0.12);
-  border: 1px solid rgba(34,197,94,0.2);
-  display: flex; align-items: center; justify-content: center;
+.amenityIcon {
+  font-size: 16px;
   flex-shrink: 0;
 }
-
-.amenityCheck { color: var(--green); font-weight: 700; font-size: 13px; }
-.amenityLabel { font-size: 13px; color: var(--text-muted); text-transform: capitalize; }
+.amenityLabel {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
 
 /* ── Sidebar ─────────────────────────────────────────────── */
-.sidebar { position: sticky; top: calc(var(--nav-h) + 24px); }
+.sidebar {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
+/* Host card */
 .hostCard {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 22px;
+  padding: 20px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 14px;
   position: relative;
   overflow: hidden;
 }
-
 .hostCard::before {
   content: '';
   position: absolute;
@@ -166,9 +178,8 @@
   background: linear-gradient(90deg, var(--primary), var(--primary-light));
   opacity: 0.7;
 }
-
 .hostAvatar {
-  width: 52px; height: 52px;
+  width: 50px; height: 50px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
@@ -178,17 +189,67 @@
   flex-shrink: 0;
   box-shadow: 0 0 0 3px rgba(13,148,136,0.2), 0 6px 16px rgba(13,148,136,0.25);
 }
-
+.hostInfo { display: flex; flex-direction: column; gap: 2px; }
 .hostLabel { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1px; }
-.hostName { font-size: 17px; font-weight: 700; color: var(--text); margin-top: 3px; }
+.hostName { font-size: 17px; font-weight: 700; color: var(--text); }
+
+/* Contact section */
+.contactSection {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+}
+.contactHeading {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-size: 11px;
+}
+
+/* Quick facts */
+.quickFacts {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 6px 0;
+  overflow: hidden;
+}
+.factRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.factRow:last-child { border-bottom: none; }
+.factLabel { font-size: 13px; color: var(--text-muted); }
+.factValue { font-size: 13px; font-weight: 700; color: var(--text); }
+
+/* Back link */
+.backLink {
+  font-size: 14px;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.18s;
+  padding: 8px 0;
+}
+.backLink:hover { color: var(--primary-light); }
 
 /* ── Responsive ──────────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { position: static; }
   .amenitiesGrid { grid-template-columns: repeat(2, 1fr); }
+  .deposit { align-items: flex-start; }
 }
 @media (max-width: 560px) {
-  .amenitiesGrid { grid-template-columns: 1fr; }
+  .amenitiesGrid { grid-template-columns: 1fr 1fr; }
   .rentCard { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .rent { font-size: 34px; }
 }

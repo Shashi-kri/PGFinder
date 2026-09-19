@@ -8,20 +8,20 @@ import styles from './page.module.css';
 
 const SCORE_FILTERS = [
   { label: 'All Matches', min: undefined },
-  { label: '70%+ Match', min: 70 },
-  { label: '80%+ Match', min: 80 },
-  { label: '90%+ Match', min: 90 },
+  { label: '70%+ Match',  min: 70 },
+  { label: '80%+ Match',  min: 80 },
+  { label: '90%+ Match',  min: 90 },
 ];
 
 export default function FlatmateMatchesPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  const [matches, setMatches] = useState<FlatmateMatch[]>([]);
+  const [matches,       setMatches]       = useState<FlatmateMatch[]>([]);
   const [totalEligible, setTotalEligible] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [needsProfile, setNeedsProfile] = useState(false);
-  const [minScore, setMinScore] = useState<number | undefined>(undefined);
+  const [loading,       setLoading]       = useState(true);
+  const [needsProfile,  setNeedsProfile]  = useState(false);
+  const [minScore,      setMinScore]      = useState<number | undefined>(undefined);
 
   const loadMatches = useCallback(async () => {
     setLoading(true);
@@ -44,12 +44,10 @@ export default function FlatmateMatchesPage() {
       router.push('/auth/login?redirect=/matches');
       return;
     }
-    if (user) {
-      loadMatches();
-    }
+    if (user) loadMatches();
   }, [user, authLoading, router, loadMatches]);
 
-  const getScoreBadgeClass = (score: number) => {
+  const getScoreClass = (score: number) => {
     if (score >= 80) return styles.scoreHigh;
     if (score >= 60) return styles.scoreMed;
     return styles.scoreLow;
@@ -57,8 +55,9 @@ export default function FlatmateMatchesPage() {
 
   if (authLoading) {
     return (
-      <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-muted)' }}>
-        Loading...
+      <div className={styles.loadingState}>
+        <div className={styles.spinner} />
+        <p>Loading…</p>
       </div>
     );
   }
@@ -67,30 +66,31 @@ export default function FlatmateMatchesPage() {
     <div className={styles.page}>
       {/* Hero */}
       <div className={styles.pageHero}>
-        <div className={styles.heroGlow} />
+        <div className={styles.heroGlow} aria-hidden="true" />
         <div className="container">
-          <span className={styles.heroEyebrow}>✨ AI Lifestyle Matching</span>
+          <span className={styles.heroEyebrow}>Flatmate Matching</span>
           <h1 className={styles.heroTitle}>
-            Find Your <span className={styles.heroAccent}>Compatible Flatmates</span>
+            Find Your{' '}
+            <span className={styles.heroAccent}>Compatible Flatmates</span>
           </h1>
           <p className={styles.heroSub}>
-            Ranked by shared living habits, sleep schedules, food preferences, guest frequency, and overlapping budgets.
+            Ranked by shared living habits, sleep schedules, food preferences, guest frequency and overlapping budgets.
           </p>
         </div>
       </div>
 
       <div className="container">
-        {/* Profile Incomplete Prompt */}
+        {/* Profile incomplete prompt */}
         {needsProfile && (
-          <div className={styles.profilePromptBanner}>
+          <div className={styles.profilePromptBanner} role="alert">
             <div>
               <h2 className={styles.promptTitle}>Complete your Seeker Profile to see matches</h2>
               <p className={styles.promptDesc}>
-                Our matching algorithm needs your living preferences (diet, sleep routine, cleanliness, budget) to calculate compatibility scores.
+                Our matching system uses your living preferences (diet, sleep schedule, cleanliness, budget) to find compatible flatmates.
               </p>
             </div>
             <Link href="/profile/seeker" className="btn btn-primary" style={{ whiteSpace: 'nowrap' }}>
-              Setup Profile →
+              Set Up Profile →
             </Link>
           </div>
         )}
@@ -99,58 +99,60 @@ export default function FlatmateMatchesPage() {
         {!needsProfile && (
           <div className={styles.toolbar}>
             <div className={styles.scoreFilterRow}>
-              <span className={styles.filterLabel}>Filter by:</span>
-              {SCORE_FILTERS.map((f) => (
+              <span className={styles.filterLabel}>Filter:</span>
+              {SCORE_FILTERS.map(f => (
                 <button
                   key={f.label}
                   type="button"
                   className={`${styles.filterChip} ${minScore === f.min ? styles.filterChipActive : ''}`}
                   onClick={() => setMinScore(f.min)}
+                  aria-pressed={minScore === f.min}
                 >
                   {f.label}
                 </button>
               ))}
             </div>
-
             <Link href="/profile/seeker" className={styles.editPrefBtn}>
-              ⚙️ Adjust My Preferences
+              ⚙️ Adjust Preferences
             </Link>
           </div>
         )}
 
-        {/* Matches List */}
+        {/* Matches */}
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '80px', color: 'var(--text-muted)' }}>
-            Calculating flatmate compatibility...
+          <div className={styles.loadingState}>
+            <div className={styles.spinner} />
+            <p>Finding compatible flatmates…</p>
           </div>
         ) : matches.length === 0 && !needsProfile ? (
           <div className={styles.emptyContainer}>
-            <div className={styles.emptyEmoji}>👥</div>
-            <h3>No compatible flatmates found in this radius</h3>
-            <p style={{ marginTop: 8 }}>
-              Try lowering your score filter, widening your budget range, or adjusting your seeker preferences.
-            </p>
+            <div className={styles.emptyIconWrap} aria-hidden="true">👥</div>
+            <h2>No compatible flatmates found</h2>
+            <p>Try lowering your score filter, widening your budget range, or adjusting your preferences.</p>
             <Link href="/profile/seeker" className="btn btn-outline" style={{ marginTop: 16 }}>
-              Edit Seeker Profile
+              Edit Preferences
             </Link>
           </div>
         ) : (
           <div className={styles.matchesGrid}>
-            {matches.map((m) => (
+            {matches.map(m => (
               <div key={m.id} className={styles.matchCard}>
                 <div>
                   <div className={styles.cardHeader}>
-                    <span className={`${styles.scoreBadge} ${getScoreBadgeClass(m.compatibility_score)}`}>
+                    <span className={`${styles.scoreBadge} ${getScoreClass(m.compatibility_score)}`}>
                       ✨ {m.compatibility_score}% Match
                     </span>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      📍 {m.dist_m > 1000 ? `${(m.dist_m / 1000).toFixed(1)} km away` : `${m.dist_m} m away`}
+                    <span className={styles.distancePill}>
+                      📍 {m.dist_m > 1000
+                        ? `${(m.dist_m / 1000).toFixed(1)} km`
+                        : `${m.dist_m} m`} away
                     </span>
                   </div>
 
                   <h3 className={styles.cardTitle}>{m.title}</h3>
                   <p className={styles.cardLocation}>
-                    📍 {[m.address, m.city].filter(Boolean).join(', ')}
+                    <span aria-hidden="true">📍</span>
+                    {[m.address, m.city].filter(Boolean).join(', ')}
                   </p>
 
                   <div className={styles.rentRow}>
@@ -162,38 +164,40 @@ export default function FlatmateMatchesPage() {
                   </div>
 
                   {/* Compatibility factors */}
-                  <div className={styles.factorsBlock}>
-                    {m.top_matching_factors?.length > 0 && (
-                      <div className={styles.factorList}>
-                        {m.top_matching_factors.map((f, i) => (
-                          <span key={i} className={styles.matchFactor}>
-                            ✓ {f}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {m.clashing_factors?.length > 0 && (
-                      <div className={styles.factorList}>
-                        {m.clashing_factors.map((c, i) => (
-                          <span key={i} className={styles.clashFactor}>
-                            ⚠ {c}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  {(m.top_matching_factors?.length > 0 || m.clashing_factors?.length > 0) && (
+                    <div className={styles.factorsBlock}>
+                      {m.top_matching_factors?.length > 0 && (
+                        <div className={styles.factorList}>
+                          {m.top_matching_factors.map((f, i) => (
+                            <span key={i} className={styles.matchFactor}>
+                              <span aria-hidden="true">✓</span> {f}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {m.clashing_factors?.length > 0 && (
+                        <div className={styles.factorList}>
+                          {m.clashing_factors.map((c, i) => (
+                            <span key={i} className={styles.clashFactor}>
+                              <span aria-hidden="true">⚠</span> {c}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
-                {/* Owner and CTA */}
+                {/* Owner footer */}
                 <div className={styles.ownerFooter}>
                   <div className={styles.ownerMeta}>
-                    <div className={styles.ownerAvatar}>
+                    <div className={styles.ownerAvatar} aria-hidden="true">
                       {(m.owner?.name || 'O')[0]?.toUpperCase()}
                     </div>
                     <div>
-                      <p className={styles.ownerName}>{m.owner?.name ?? 'Flatmate'}</p>
+                      <p className={styles.ownerName}>{m.owner?.name ?? 'Property Owner'}</p>
                       {m.owner?.verified && (
-                        <span style={{ fontSize: '0.75rem', color: '#16a34a' }}>✓ Verified</span>
+                        <span className={styles.verifiedBadge}>✓ Verified</span>
                       )}
                     </div>
                   </div>

@@ -1,8 +1,28 @@
 /* ══════════════════════════════════════════════════════════
-   Saved Page — Synchronized to PGFinder Design System
+   Saved Page — PGFinder Design System
    ══════════════════════════════════════════════════════════ */
 
-/* ── Page hero ───────────────────────────────────────────── */
+/* ── Loading state ─────────────────────────────────────── */
+.loadingState {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Page hero ─────────────────────────────────────────── */
 .pageHero {
   position: relative;
   background: var(--hero-bg);
@@ -92,12 +112,29 @@
 /* ── Content area ────────────────────────────────────────── */
 .page { padding: 40px 0 80px; }
 
-/* ── Grid ────────────────────────────────────────────────── */
+/* ── Grid ──────────────────────────────────────────── */
+.resultsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.resultsLabel { font-size: 14px; color: var(--text-muted); }
+.resultsCount { font-size: 15px; font-weight: 900; color: var(--text); }
+.browseMore {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-light);
+  transition: color 0.18s;
+}
+.browseMore:hover { color: var(--primary); }
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
-  margin-top: 0;
 }
 
 /* ── Empty state ─────────────────────────────────────────── */

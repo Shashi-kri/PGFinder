@@ -25,10 +25,10 @@ export default function ListingCard({ listing }: Props) {
 
   return (
     <Link href={`/listings/${listing.id}`} className={styles.card}>
-      {/* Photo */}
+      {/* Photo area */}
       <div className={styles.photo}>
         {photo ? (
-          <img src={photo} alt={listing.title} className={styles.img} />
+          <img src={photo} alt={listing.title} className={styles.img} loading="lazy" />
         ) : (
           <div className={styles.photoPlaceholder}>
             <span className={styles.placeholderIcon}>
@@ -37,47 +37,59 @@ export default function ListingCard({ listing }: Props) {
           </div>
         )}
 
-        {/* Cinematic gradient overlay */}
+        {/* Gradient overlay for bottom text contrast */}
         {photo && <div className={styles.photoGradient} />}
-
-        {/* Overlaid price badge — bottom left */}
-        <div className={styles.priceBadge}>
-          <span className={styles.priceValue}>{formatRent(listing.rent)}</span>
-          <span className={styles.priceUnit}>/mo</span>
-        </div>
 
         {/* Type badge — top left */}
         <span className={styles.typeBadge}>{TYPE_LABELS[listing.type]}</span>
 
         {/* Save button — top right */}
-        <SaveButton listingId={listing.id} />
+        <div className={styles.saveWrap}>
+          <SaveButton listingId={listing.id} />
+        </div>
 
-        {/* Rating — top right (shift when no save btn?) */}
-        {rating && <span className={styles.ratingBadge}>⭐ {rating}</span>}
+        {/* Price badge — bottom left */}
+        <div className={styles.priceBadge}>
+          <span className={styles.priceValue}>{formatRent(listing.rent)}</span>
+          <span className={styles.priceUnit}>/mo</span>
+        </div>
       </div>
 
-      {/* Content */}
+      {/* Card body */}
       <div className={styles.body}>
-        <h3 className={styles.title}>{listing.title}</h3>
-        <p className={styles.address}>
-          📍 {listing.address ?? listing.city ?? 'Location not specified'}
-        </p>
-
-        <div className={styles.meta}>
-          {listing.food_type && listing.food_type !== 'none' && (
-            <span className={styles.metaTag}>
-              {FOOD_ICONS[listing.food_type]} {listing.food_type}
+        <div className={styles.titleRow}>
+          <h3 className={styles.title}>{listing.title}</h3>
+          {rating && (
+            <span className={styles.ratingBadge}>
+              ⭐ {rating}
             </span>
-          )}
-          {distanceKm && (
-            <span className={styles.metaTag}>📏 {distanceKm} km away</span>
           )}
         </div>
 
+        <p className={styles.address}>
+          <span aria-hidden="true">📍</span>
+          {listing.address ?? listing.city ?? 'Location not specified'}
+        </p>
+
+        {/* Meta tags */}
+        {(listing.food_type && listing.food_type !== 'none' || distanceKm) && (
+          <div className={styles.meta}>
+            {listing.food_type && listing.food_type !== 'none' && (
+              <span className={styles.metaTag}>
+                {FOOD_ICONS[listing.food_type]} {listing.food_type}
+              </span>
+            )}
+            {distanceKm && (
+              <span className={styles.metaTag}>📏 {distanceKm} km away</span>
+            )}
+          </div>
+        )}
+
+        {/* Footer */}
         <div className={styles.footer}>
           <span className={styles.viewBtn}>View Details →</span>
           {listing.deposit && (
-            <span className={styles.deposit}>Deposit: {formatRent(listing.deposit)}</span>
+            <span className={styles.deposit}>Dep: {formatRent(listing.deposit)}</span>
           )}
         </div>
       </div>

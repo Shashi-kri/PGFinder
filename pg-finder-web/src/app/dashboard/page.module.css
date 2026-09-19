@@ -226,18 +226,18 @@
 }
 
 /* ── Empty state ─────────────────────────────────────────── */
-.empty { text-align: center; padding: 70px 24px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.empty { text-align: center; padding: 70px 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .emptyIconWrap {
-  width: 80px; height: 80px;
+  width: 86px; height: 86px;
   border-radius: 50%;
   background: rgba(13,148,136,0.1);
   border: 1px solid rgba(13,148,136,0.2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 36px;
+  font-size: 38px;
+  box-shadow: 0 0 24px rgba(13,148,136,0.12);
 }
-.empty span { font-size: 48px; }
-.empty h3 { font-size: 20px; font-weight: 700; color: var(--text); }
-.empty p { font-size: 14px; color: var(--text-muted); }
+.empty h3 { font-size: 21px; font-weight: 700; color: var(--text); }
+.empty p  { font-size: 14px; color: var(--text-muted); max-width: 340px; line-height: 1.6; }
 
 /* ── New listing form ────────────────────────────────────── */
 .inner { max-width: 680px; }

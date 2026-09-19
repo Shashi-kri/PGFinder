@@ -1,8 +1,7 @@
 /* ══════════════════════════════════════════════════════════
-   Listings Page — Synchronized to PGFinder Design System
+   Listings Browse Page — PGFinder Design System
    ══════════════════════════════════════════════════════════ */
 
-/* ── Orb float keyframes ──────────────────────────────── */
 @keyframes orbFloat1 {
   0%   { transform: translate(0, 0)   scale(1); }
   30%  { transform: translate(40px, -30px) scale(1.08); }
@@ -15,6 +14,14 @@
   70%  { transform: translate(25px, -15px) scale(0.96); }
   100% { transform: translate(0, 0)   scale(1); }
 }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(13,148,136,0); }
+  50%       { box-shadow: 0 0 20px 6px rgba(13,148,136,0.25); }
+}
 
 /* ── Page top hero ──────────────────────────────────────── */
 .pageHero {
@@ -24,7 +31,6 @@
   transition: background 0.5s ease;
 }
 
-/* Shared pseudo — bottom divider line */
 .pageHero::after {
   content: '';
   position: absolute;
@@ -32,6 +38,8 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
 }
+
+.pageHero .container { position: relative; z-index: 1; }
 
 /* ── Floating orbs ───────────────────────────────────────── */
 .heroOrb1,
@@ -65,78 +73,53 @@
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
 }
 
-/* Keep container content above orbs */
-.pageHero .container { position: relative; z-index: 1; }
-
-/* ── Per-type backgrounds ───────────────────────────────── */
-
-/* Browse — deep cosmic navy with cyan + violet orbs */
+/* ── Per-type hero backgrounds ───────────────────────────── */
 .heroBrowse { background: linear-gradient(145deg, #04071a 0%, #080e22 50%, #060b1c 100%); }
 .heroBrowse .heroOrb1 { background: radial-gradient(circle, rgba(56,189,248,0.55), rgba(99,102,241,0.30) 60%, transparent); }
 .heroBrowse .heroOrb2 { background: radial-gradient(circle, rgba(139,92,246,0.45), rgba(59,130,246,0.25) 60%, transparent); }
 
-/* PG — deep forest with vivid emerald + teal orbs */
 .heroPg { background: linear-gradient(145deg, #001812 0%, #021a10 50%, #001410 100%); }
 .heroPg .heroOrb1 { background: radial-gradient(circle, rgba(16,185,129,0.60), rgba(5,150,105,0.30) 60%, transparent); }
 .heroPg .heroOrb2 { background: radial-gradient(circle, rgba(13,148,136,0.50), rgba(6,182,212,0.25) 60%, transparent); }
 .heroPg .heroTitle   { color: #6ee7b7; }
 .heroPg .heroEyebrow { color: #34d399; }
-.heroPg .resultCount {
-  background: rgba(16,185,129,0.12);
-  border-color: rgba(52,211,153,0.35);
-  color: #34d399;
-}
+.heroPg .resultCount { background: rgba(16,185,129,0.12); border-color: rgba(52,211,153,0.35); color: #34d399; }
 
-/* Flat — deep space indigo with violet + blue orbs */
 .heroFlat { background: linear-gradient(145deg, #06071f 0%, #0c0d2b 50%, #080920 100%); }
 .heroFlat .heroOrb1 { background: radial-gradient(circle, rgba(99,102,241,0.60), rgba(79,70,229,0.30) 60%, transparent); }
 .heroFlat .heroOrb2 { background: radial-gradient(circle, rgba(139,92,246,0.50), rgba(109,40,217,0.25) 60%, transparent); }
 .heroFlat .heroTitle   { color: #c7d2fe; }
 .heroFlat .heroEyebrow { color: #a5b4fc; }
-.heroFlat .resultCount {
-  background: rgba(99,102,241,0.15);
-  border-color: rgba(129,140,248,0.35);
-  color: #a5b4fc;
-}
+.heroFlat .resultCount { background: rgba(99,102,241,0.15); border-color: rgba(129,140,248,0.35); color: #a5b4fc; }
 
-/* Flatmate — deep dusk with amber + gold orbs */
 .heroFlatmate { background: linear-gradient(145deg, #140d00 0%, #1a1100 50%, #120c00 100%); }
 .heroFlatmate .heroOrb1 { background: radial-gradient(circle, rgba(245,158,11,0.55), rgba(217,119,6,0.30) 60%, transparent); }
 .heroFlatmate .heroOrb2 { background: radial-gradient(circle, rgba(251,191,36,0.45), rgba(234,179,8,0.22) 60%, transparent); }
 .heroFlatmate .heroTitle   { color: #fde68a; }
 .heroFlatmate .heroEyebrow { color: #fbbf24; }
-.heroFlatmate .resultCount {
-  background: rgba(245,158,11,0.12);
-  border-color: rgba(251,191,36,0.35);
-  color: #fbbf24;
-}
+.heroFlatmate .resultCount { background: rgba(245,158,11,0.12); border-color: rgba(251,191,36,0.35); color: #fbbf24; }
 
-/* Mess — deep ember with orange + red orbs */
 .heroMess { background: linear-gradient(145deg, #150600 0%, #1a0800 50%, #130500 100%); }
 .heroMess .heroOrb1 { background: radial-gradient(circle, rgba(234,88,12,0.60), rgba(220,38,38,0.28) 60%, transparent); }
 .heroMess .heroOrb2 { background: radial-gradient(circle, rgba(249,115,22,0.50), rgba(239,68,68,0.22) 60%, transparent); }
 .heroMess .heroTitle   { color: #fed7aa; }
 .heroMess .heroEyebrow { color: #fb923c; }
-.heroMess .resultCount {
-  background: rgba(234,88,12,0.12);
-  border-color: rgba(251,146,60,0.35);
-  color: #fb923c;
-}
+.heroMess .resultCount { background: rgba(234,88,12,0.12); border-color: rgba(251,146,60,0.35); color: #fb923c; }
 
-
+/* ── Hero typography ─────────────────────────────────────── */
 .heroEyebrow {
   display: block;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 2.5px;
   color: var(--primary-light);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   text-transform: uppercase;
   animation: fadeUp 0.4s ease both;
 }
 
 .heroTitle {
-  font-size: clamp(28px, 4.5vw, 46px);
+  font-size: clamp(28px, 4.5vw, 48px);
   font-weight: 900;
   color: #fff;
   letter-spacing: -1.5px;
@@ -145,9 +128,11 @@
 }
 
 .heroSub {
-  font-size: 15px;
-  color: rgba(255,255,255,0.55);
-  margin-top: 8px;
+  font-size: 16px;
+  color: rgba(255,255,255,0.58);
+  margin-top: 10px;
+  max-width: 540px;
+  line-height: 1.7;
   animation: fadeUp 0.5s ease 0.1s both;
 }
 
@@ -158,31 +143,30 @@
   background: rgba(13,148,136,0.15);
   border: 1px solid rgba(45,212,191,0.25);
   border-radius: var(--radius-pill);
-  padding: 4px 14px;
+  padding: 5px 16px;
   font-size: 13px;
   font-weight: 700;
   color: var(--primary-light);
-  margin-top: 16px;
+  margin-top: 18px;
   animation: fadeUp 0.5s ease 0.15s both;
 }
 
 /* ── Content area ────────────────────────────────────────── */
 .page { padding: 40px 0 80px; }
 
-/* ── Filters ─────────────────────────────────────────────── */
+/* ── Filters panel ───────────────────────────────────────── */
 .filters {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 36px;
-  padding: 20px 24px;
+  margin-bottom: 32px;
+  padding: 20px 22px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-sm);
 }
 
-/* ── Context row (shown when type is locked from navbar) ───── */
 .contextRow {
   display: flex;
   align-items: center;
@@ -198,11 +182,9 @@
   border-radius: var(--radius-pill);
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.02em;
 }
 
-/* Per-type badge accent colours */
-.badge_pg        { background: rgba(13,148,136,0.12);  border: 1px solid rgba(45,212,191,0.3); color: var(--primary-light); }
+.badge_pg        { background: rgba(13,148,136,0.12);  border: 1px solid rgba(45,212,191,0.3);  color: var(--primary-light); }
 .badge_flat      { background: rgba(99,102,241,0.12);  border: 1px solid rgba(129,140,248,0.3); color: #a5b4fc; }
 .badge_flatmate  { background: rgba(245,158,11,0.12);  border: 1px solid rgba(251,191,36,0.3);  color: #fbbf24; }
 .badge_mess      { background: rgba(234,88,12,0.12);   border: 1px solid rgba(251,146,60,0.3);  color: #fb923c; }
@@ -211,10 +193,8 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
+  background: none; border: none;
+  cursor: pointer; padding: 0;
   transition: color 0.2s;
   margin-left: auto;
 }
@@ -244,15 +224,17 @@
   color: #fff;
   box-shadow: 0 4px 14px rgba(13,148,136,0.35);
 }
-
-.filterDivider {
-  height: 1px;
-  background: var(--border);
+.pill:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
-.filterRow { display: flex; gap: 12px; flex-wrap: wrap; }
+.filterDivider { height: 1px; background: var(--border); }
+
+.filterRow { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
 .select {
-  max-width: 220px;
+  max-width: 200px;
   padding: 10px 14px;
   font-size: 14px;
   cursor: pointer;
@@ -260,7 +242,7 @@
   border-color: var(--border);
 }
 
-/* ── Results header ─────────────────────────────────────── */
+/* ── Results header ──────────────────────────────────────── */
 .resultsHeader {
   display: flex;
   align-items: center;
@@ -276,7 +258,7 @@
 }
 .resultsCount {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 900;
   color: var(--text);
 }
 
@@ -294,7 +276,7 @@
   border-radius: var(--radius-xl);
   overflow: hidden;
 }
-.skeletonPhoto { height: 200px; }
+.skeletonPhoto { height: 210px; }
 .skeletonBody { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
 .skeletonLine { border-radius: var(--radius-sm); height: 14px; }
 
@@ -334,30 +316,25 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
+  color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
-  padding: 8px 18px;
+  padding: 8px 20px;
 }
-.pageDot { color: var(--primary-light); font-weight: 900; }
+.pageInfoOf { color: var(--text-muted); font-weight: 400; }
 
 /* ── Responsive ──────────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(13,148,136,0); }
-  50%       { box-shadow: 0 0 20px 6px rgba(13,148,136,0.25); }
-}
-
 @media (max-width: 1024px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) {
   .grid { grid-template-columns: 1fr; }
   .select { max-width: 100%; }
-  .filters { padding: 16px; border-radius: var(--radius-lg); }
+  .filters { padding: 14px; border-radius: var(--radius-lg); }
   .pageHero { padding: calc(var(--nav-h) + 24px) 0 32px; }
+  .heroSub { font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroOrb1, .heroOrb2, .emptyIconWrap { animation: none; }
 }
