@@ -97,6 +97,13 @@ img { max-width: 100%; display: block; }
   padding: 0 24px;
 }
 
+@media (max-width: 480px) {
+  .container {
+    padding: 0 16px;
+  }
+}
+
+
 .section { padding: 80px 0; }
 
 .gradient-text {

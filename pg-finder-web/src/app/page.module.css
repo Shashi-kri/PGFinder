@@ -61,7 +61,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 48px;
   align-items: flex-end;
-  padding: 64px 0 0;
+  /* horizontal padding comes from .container — only set top here */
+  padding-top: 64px;
   position: relative;
   z-index: 2;
 }
@@ -742,7 +743,7 @@
 }
 
 @media (max-width: 600px) {
-  .heroGrid { padding: 48px 0 36px; }
+  .heroGrid { padding-top: 48px; padding-bottom: 36px; }
   .heroLeft { gap: 16px; }
   .heroTagsWrap { flex-direction: column; align-items: flex-start; gap: 6px; }
   .servicesGrid { grid-template-columns: 1fr; }
