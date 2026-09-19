@@ -28,10 +28,10 @@ export default function CoverflowCarousel({ listings }: Props) {
   const next = useCallback(() => setActive(i => (i + 1) % count), [count]);
   const prev = useCallback(() => setActive(i => (i - 1 + count) % count), [count]);
 
-  // Auto-advance every 4s
+  // Auto-advance every 4.5s
   const startAuto = useCallback(() => {
     if (autoRef.current) clearInterval(autoRef.current);
-    autoRef.current = setInterval(next, 4000);
+    autoRef.current = setInterval(next, 4500);
   }, [next]);
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function CoverflowCarousel({ listings }: Props) {
 
   if (!count) return null;
 
-  // Compute per-card visual params
+  // Compute per-card visual params — NO BLUR on side cards
   const getCardProps = (index: number) => {
     let diff = index - active;
     if (diff > count / 2)  diff -= count;
@@ -72,10 +72,9 @@ export default function CoverflowCarousel({ listings }: Props) {
 
     if (absDiff > 2) return null; // hidden
 
-    const SCALES   = [1,    0.82, 0.64] as const;
-    const BLURS    = [0,    4,    9]    as const;
-    const OPACS    = [1,    0.70, 0.38] as const;
-    const OFFSETS  = [0,    290,  530]  as const; // px from center
+    const SCALES   = [1,    0.86, 0.72] as const;
+    const OPACS    = [1,    0.78, 0.50] as const;
+    const OFFSETS  = [0,    285,  510]  as const; // px from center
 
     const sign   = diff >= 0 ? 1 : -1;
     const offset = sign * OFFSETS[absDiff];
@@ -83,12 +82,13 @@ export default function CoverflowCarousel({ listings }: Props) {
     return {
       style: {
         transform: `translateX(calc(-50% + ${offset}px)) scale(${SCALES[absDiff]})`,
-        filter:    BLURS[absDiff] ? `blur(${BLURS[absDiff]}px)` : 'none',
+        filter:    'none',  // no blur — users can see neighboring cards
         opacity:   OPACS[absDiff],
         zIndex:    10 - absDiff,
         cursor:    absDiff === 0 ? 'default' : 'pointer',
       } as React.CSSProperties,
       isActive: absDiff === 0,
+      absDiff,
     };
   };
 
@@ -104,7 +104,7 @@ export default function CoverflowCarousel({ listings }: Props) {
         {listings.map((listing, i) => {
           const props = getCardProps(i);
           if (!props && mounted) return null;
-          const { style, isActive } = props ?? { style: {}, isActive: false };
+          const { style, isActive, absDiff } = props ?? { style: {}, isActive: false, absDiff: 0 };
 
           const photo = listing.photos?.[0]?.url;
           const rating = listing.avg_rating ? Number(listing.avg_rating).toFixed(1) : null;
@@ -116,11 +116,15 @@ export default function CoverflowCarousel({ listings }: Props) {
               style={style}
               onClick={() => !isActive && setActive(i)}
               aria-hidden={!isActive}
+              role={!isActive ? 'button' : undefined}
+              tabIndex={!isActive ? 0 : undefined}
+              onKeyDown={!isActive ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(i); } } : undefined}
+              aria-label={!isActive ? `View ${listing.title}` : undefined}
             >
               {/* Photo */}
               <div className={styles.cardPhoto}>
                 {photo ? (
-                  <img src={photo} alt={listing.title} className={styles.cardImg} />
+                  <img src={photo} alt={listing.title} className={styles.cardImg} loading="lazy" />
                 ) : (
                   <div className={styles.cardPlaceholder}>
                     <span className={styles.cardPlaceholderIcon}>
@@ -129,9 +133,14 @@ export default function CoverflowCarousel({ listings }: Props) {
                   </div>
                 )}
 
+                {/* Type badge */}
+                <div className={styles.cardTypeBadge}>
+                  {TYPE_LABELS[listing.type] ?? listing.type}
+                </div>
+
                 {/* Location badge */}
                 <div className={styles.cardLocBadge}>
-                  <span>📍</span>
+                  <span aria-hidden="true">📍</span>
                   <span>{listing.city ?? listing.address?.split(',')[0] ?? 'India'}</span>
                 </div>
               </div>
@@ -144,7 +153,6 @@ export default function CoverflowCarousel({ listings }: Props) {
                     {formatRent(listing.rent)}
                     <span className={styles.cardPer}>/mo</span>
                   </span>
-                  <span className={styles.cardTypePill}>{TYPE_LABELS[listing.type]}</span>
                   {rating && <span className={styles.cardRating}>⭐ {rating}</span>}
                 </div>
 
@@ -164,15 +172,15 @@ export default function CoverflowCarousel({ listings }: Props) {
         <button className={styles.navBtn} onClick={() => { prev(); startAuto(); }} aria-label="Previous listing">
           ←
         </button>
-        <div className={styles.dots} role="tablist">
+        <div className={styles.dots} role="tablist" aria-label="Listing navigation">
           {listings.map((_, i) => (
             <button
               key={i}
               role="tab"
               aria-selected={i === active}
+              aria-label={`Listing ${i + 1}`}
               className={`${styles.dot} ${i === active ? styles.dotActive : ''}`}
               onClick={() => { setActive(i); startAuto(); }}
-              aria-label={`Listing ${i + 1}`}
             />
           ))}
         </div>

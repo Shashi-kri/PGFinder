@@ -30,40 +30,54 @@ export default function Navbar() {
     setUserMenuOpen(false);
   }
 
+  // Close user menu when clicking outside
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-user-menu]')) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [userMenuOpen]);
+
   const navLinks = [
     { href: '/listings', label: 'Browse', type: null },
     { href: '/listings?type=pg', label: 'PGs', type: 'pg' },
     { href: '/listings?type=flat', label: 'Flats', type: 'flat' },
     { href: '/listings?type=flatmate', label: 'Flatmates', type: 'flatmate' },
-    { href: '/listings?type=mess', label: 'Mess', type: 'mess' },
-    { href: '/matches', label: 'Matches ✨', type: 'matches' },
+    { href: '/matches', label: 'Find Your Match ✨', type: 'matches' },
   ];
 
-  // A link is active when its path matches AND (no type means no type param, or type matches current)
   const isLinkActive = (link: { href: string; type: string | null }) => {
     if (link.type === 'matches') return pathname === '/matches';
     if (pathname !== '/listings') return false;
     const currentType = searchParams.get('type');
-    if (link.type === null) return !currentType; // "Browse" active only when no type filter
+    if (link.type === null) return !currentType;
     return currentType === link.type;
   };
 
   const handleLogout = () => { logout(); router.push('/'); };
 
   return (
-    <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`}>
+    <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ''}`} role="navigation" aria-label="Main navigation">
       <div className={`container ${styles.inner}`}>
         {/* Logo */}
-        <Link href="/" className={styles.logo}>
+        <Link href="/" className={styles.logo} aria-label="PGFinder home">
           <span className={styles.logoIcon}>🏠</span>
           <span className={styles.logoText}>PG<span className={styles.logoDot}>Finder</span></span>
         </Link>
 
         {/* Desktop links */}
-        <div className={styles.links}>
+        <div className={styles.links} role="list">
           {navLinks.map((l) => (
             <Link key={l.href} href={l.href}
-              className={`${styles.link} ${isLinkActive(l) ? styles.active : ''}`}>
+              className={`${styles.link} ${isLinkActive(l) ? styles.active : ''}`}
+              role="listitem"
+              aria-current={isLinkActive(l) ? 'page' : undefined}
+            >
               {l.label}
             </Link>
           ))}
@@ -71,36 +85,49 @@ export default function Navbar() {
 
         {/* Desktop actions */}
         <div className={styles.actions}>
-          <button className={styles.themeBtn} onClick={toggle} aria-label="Toggle theme" title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+          <button
+            className={styles.themeBtn}
+            onClick={toggle}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          >
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
-          <Link href="/dashboard/new" className={styles.postBtn}>+ Post Listing</Link>
+          <Link href="/dashboard/new" className={styles.postBtn}>
+            + List Property
+          </Link>
 
           {user ? (
-            <div className={styles.userMenu}>
-              <button className={styles.avatarBtn} onClick={() => setUserMenuOpen(!userMenuOpen)}>
+            <div className={styles.userMenu} data-user-menu>
+              <button
+                className={styles.avatarBtn}
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                aria-expanded={userMenuOpen}
+                aria-haspopup="menu"
+                aria-label="User menu"
+              >
                 {user.photo_url ? (
                   <img src={user.photo_url} alt={user.name} className={styles.avatarPhoto} />
                 ) : (
                   <span className={styles.avatarCircle}>{user.name[0].toUpperCase()}</span>
                 )}
                 <span className={styles.userName}>{user.name.split(' ')[0]}</span>
-                <span className={styles.chevDown}>▾</span>
+                <span className={styles.chevDown} aria-hidden="true">▾</span>
               </button>
               {userMenuOpen && (
-                <div className={styles.dropdown}>
+                <div className={styles.dropdown} role="menu">
                   <div className={styles.dropdownHeader}>
                     <p className={styles.dropdownName}>{user.name}</p>
                     <p className={styles.dropdownEmail}>{user.email}</p>
                   </div>
                   <div className={styles.dropdownDivider} />
-                  <Link href="/matches" className={styles.dropdownItem}>✨ Flatmate Matches</Link>
-                  <Link href="/profile/seeker" className={styles.dropdownItem}>🤝 Seeker Profile</Link>
-                  <Link href="/dashboard" className={styles.dropdownItem}>🏠 My Listings</Link>
-                  <Link href="/saved" className={styles.dropdownItem}>❤️ Saved Places</Link>
-                  <Link href="/profile" className={styles.dropdownItem}>👤 Profile</Link>
+                  <Link href="/matches" className={styles.dropdownItem} role="menuitem">✨ Find Your Match</Link>
+                  <Link href="/profile/seeker" className={styles.dropdownItem} role="menuitem">🤝 Seeker Profile</Link>
+                  <Link href="/dashboard" className={styles.dropdownItem} role="menuitem">🏠 My Listings</Link>
+                  <Link href="/saved" className={styles.dropdownItem} role="menuitem">❤️ Saved Places</Link>
+                  <Link href="/profile" className={styles.dropdownItem} role="menuitem">👤 Profile</Link>
                   <div className={styles.dropdownDivider} />
-                  <button className={`${styles.dropdownItem} ${styles.logoutItem}`} onClick={handleLogout}>
+                  <button className={`${styles.dropdownItem} ${styles.logoutItem}`} onClick={handleLogout} role="menuitem">
                     🚪 Sign Out
                   </button>
                 </div>
@@ -115,7 +142,12 @@ export default function Navbar() {
         </div>
 
         {/* Mobile hamburger */}
-        <button className={styles.hamburger} onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
+        <button
+          className={styles.hamburger}
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+        >
           <span className={`${styles.bar} ${menuOpen ? styles.bar1Open : ''}`} />
           <span className={`${styles.bar} ${menuOpen ? styles.bar2Open : ''}`} />
           <span className={`${styles.bar} ${menuOpen ? styles.bar3Open : ''}`} />
@@ -124,25 +156,25 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className={styles.mobileMenu}>
+        <div className={styles.mobileMenu} role="menu">
           {navLinks.map((l) => (
-            <Link key={l.href} href={l.href} className={styles.mobileLink} onClick={() => setMenuOpen(false)}>{l.label}</Link>
+            <Link key={l.href} href={l.href} className={`${styles.mobileLink} ${isLinkActive(l) ? styles.mobileLinkActive : ''}`} onClick={() => setMenuOpen(false)} role="menuitem">{l.label}</Link>
           ))}
           <div className={styles.mobileDivider} />
           {user ? (
             <>
               <p className={styles.mobileUser}>👋 {user.name}</p>
-              <Link href="/dashboard" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>🏠 My Listings</Link>
-              <Link href="/saved" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>❤️ Saved Places</Link>
-              <button className={`${styles.mobileLink} ${styles.logoutItem}`} onClick={handleLogout}>🚪 Sign Out</button>
+              <Link href="/dashboard" className={styles.mobileLink} onClick={() => setMenuOpen(false)} role="menuitem">🏠 My Listings</Link>
+              <Link href="/saved" className={styles.mobileLink} onClick={() => setMenuOpen(false)} role="menuitem">❤️ Saved Places</Link>
+              <button className={`${styles.mobileLink} ${styles.logoutItem}`} onClick={handleLogout} role="menuitem">🚪 Sign Out</button>
             </>
           ) : (
             <>
-              <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)}>Sign In</Link>
-              <Link href="/auth/register" className={`${styles.mobileLink} ${styles.mobilePrimary}`} onClick={() => setMenuOpen(false)}>Get Started</Link>
+              <Link href="/auth/login" className={styles.mobileLink} onClick={() => setMenuOpen(false)} role="menuitem">Sign In</Link>
+              <Link href="/auth/register" className={`${styles.mobileLink} ${styles.mobilePrimary}`} onClick={() => setMenuOpen(false)} role="menuitem">Get Started</Link>
             </>
           )}
-          <Link href="/dashboard/new" className={`${styles.mobileLink} ${styles.mobilePrimary}`} onClick={() => setMenuOpen(false)}>+ Post Listing</Link>
+          <Link href="/dashboard/new" className={`${styles.mobileLink} ${styles.mobilePostBtn}`} onClick={() => setMenuOpen(false)} role="menuitem">+ List Property</Link>
         </div>
       )}
     </nav>

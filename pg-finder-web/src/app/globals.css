@@ -12,7 +12,8 @@
   --primary-glow:   rgba(13, 148, 136, 0.25);
 
   --hero-bg:        #061918;
-  --section-alt:    #EBF8F7;
+  /* dark mode: section-alt uses a slightly lighter dark surface */
+  --section-alt:    #13131A;
 
   --bg:             #0F0F13;
   --bg-2:           #16161D;
@@ -66,6 +67,7 @@
   --primary:        #0F766E;
   --primary-dark:   #115E59;
   --primary-light:  #0D9488;
+  /* light mode: section-alt is light mint */
   --section-alt:    #F0FEFB;
 }
 
@@ -318,4 +320,14 @@ img { max-width: 100%; display: block; }
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+}
+
+/* --- Prefers reduced motion ------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

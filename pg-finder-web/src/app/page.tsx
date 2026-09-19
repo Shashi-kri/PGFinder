@@ -16,49 +16,113 @@ async function getFeaturedListings() {
   }
 }
 
-const STATS = [
-  { value: '10,000+', label: 'Verified Listings' },
-  { value: '50+', label: 'Cities Covered' },
-  { value: '₹0', label: 'Brokerage Fees' },
-  { value: '4.8★', label: 'App Rating' },
-];
-
 const SERVICES = [
   {
-    type: 'pg', icon: '🏠', label: 'PG Rooms',
-    desc: 'Paying guest accommodations with meals & facilities included.',
+    type: 'pg', label: 'PG Rooms',
+    desc: 'Find single and shared rooms near your college or workplace.',
+    cta: 'Explore PGs',
     imageSrc: '/images/service-pg.jpg',
   },
   {
-    type: 'flat', icon: '🏢', label: 'Flats & Apartments',
-    desc: 'Entire flats for rent or shared apartments across the city.',
+    type: 'flat', label: 'Flats & Apartments',
+    desc: 'Find entire or shared flats that fit your budget.',
+    cta: 'Explore Flats',
     imageSrc: '/images/service-flat.jpg',
   },
   {
-    type: 'flatmate', icon: '👥', label: 'Find Flatmates',
-    desc: 'Compatible people to share your space based on lifestyle.',
+    type: 'flatmate', label: 'Find Flatmates',
+    desc: 'Find people with compatible budgets and lifestyles.',
+    cta: 'Find Flatmates',
     imageSrc: '/images/service-flatmate.png',
   },
   {
-    type: 'mess', icon: '🍱', label: 'Mess & Tiffin',
-    desc: 'Monthly meal subscriptions delivered near your location.',
+    type: 'mess', label: 'Mess & Tiffin',
+    desc: 'Discover affordable meal services near your location.',
+    cta: 'Find Food',
     imageSrc: '/images/service-mess.jpg',
   },
 ];
 
-const FEATURES = [
-  { icon: '🔍', title: 'Smart Search', desc: 'Filter by type, food, budget, and distance.' },
-  { icon: '✅', title: 'Verified Listings', desc: 'Real photos, no fakes. Every listing reviewed.' },
-  { icon: '💬', title: 'Direct Contact', desc: 'Connect directly with owners. No middlemen.' },
-  { icon: '🤝', title: 'Flatmate Matching', desc: 'Algorithm matches you with compatible flatmates.' },
-  { icon: '🗺️', title: 'Map View', desc: 'See listings on a map. Know the location first.' },
-  { icon: '📱', title: 'Mobile App', desc: 'Browse on Android & iOS. Get notified instantly.' },
+const HOW_IT_WORKS = [
+  {
+    step: '01',
+    title: 'Search',
+    desc: 'Tell us where you want to live — by area, landmark or city.',
+  },
+  {
+    step: '02',
+    title: 'Compare',
+    desc: 'Explore PGs, flats and flatmates that fit your needs and budget.',
+  },
+  {
+    step: '03',
+    title: 'Connect',
+    desc: 'Contact property owners directly. No middlemen, no brokerage.',
+  },
+  {
+    step: '04',
+    title: 'Move In',
+    desc: 'Visit in person, verify the property, and make your decision.',
+  },
 ];
 
-const BENEFITS = [
-  { icon: '💚', title: 'Zero Brokerage', desc: 'No hidden fees, ever.' },
-  { icon: '🔒', title: 'Verified Owners', desc: 'All landlords ID-verified.' },
-  { icon: '⚡', title: 'Go Live in Minutes', desc: 'List your property instantly.' },
+const WHY_PGFINDER = [
+  {
+    icon: '📞',
+    title: 'Direct Owner Contact',
+    desc: 'Connect directly with property owners. No agents, no commission.',
+  },
+  {
+    icon: '🔍',
+    title: 'Smart Search & Filters',
+    desc: 'Filter by location, budget, type, food, and more to find your match.',
+  },
+  {
+    icon: '📋',
+    title: 'Detailed Listings',
+    desc: 'See photos, amenities, location and pricing all in one place.',
+  },
+  {
+    icon: '🤝',
+    title: 'Built for Renters',
+    desc: 'Designed around the needs of students and working professionals.',
+  },
+];
+
+const SAFETY_TIPS = [
+  {
+    icon: '🔎',
+    title: 'Verify before paying',
+    desc: "Never send money before properly verifying the property and owner in person.",
+  },
+  {
+    icon: '🏠',
+    title: 'Visit before booking',
+    desc: 'Always inspect the accommodation where possible before committing.',
+  },
+  {
+    icon: '🚩',
+    title: 'Report suspicious listings',
+    desc: 'Something feel wrong? Report the listing and help keep the platform safe.',
+  },
+];
+
+const OWNER_BENEFITS = [
+  {
+    icon: '₹0',
+    title: 'Zero Brokerage',
+    desc: 'No hidden fees or unnecessary commission.',
+  },
+  {
+    icon: '📝',
+    title: 'Easy Listing',
+    desc: 'Create and publish your listing in minutes.',
+  },
+  {
+    icon: '📡',
+    title: 'Reach Renters Directly',
+    desc: 'Connect with genuine seekers looking in your area.',
+  },
 ];
 
 export default async function HomePage() {
@@ -75,7 +139,8 @@ export default async function HomePage() {
         <div className={styles.cityBgWrap}>
           <img
             src="/images/hero-city-bg.jpg"
-            alt="City skyline background"
+            alt=""
+            aria-hidden="true"
             className={styles.cityBgImg}
           />
           <div className={styles.heroOverlay} />
@@ -89,32 +154,37 @@ export default async function HomePage() {
           <div className={styles.heroLeft}>
             <div className={styles.heroBadge}>
               <span className={styles.heroBadgeDot}>✨</span>
-              Flatmate matching is now live!
+              Flatmate matching is now live
             </div>
 
             <h1 className={styles.heroTitle}>
-              Find your perfect<br />
-              <span className={styles.heroAccent}>PG, Flat or Flatmate</span>
+              Find a place you'll actually<br />
+              <span className={styles.heroAccent}>love coming home to.</span>
             </h1>
 
+            <p className={styles.heroTypes}>PGs &bull; Flats &bull; Flatmates &bull; Mess</p>
+
             <p className={styles.heroSub}>
-              Discover verified PGs, flats, and flatmate rooms near you.
-              Direct contact with owners. Zero brokerage. Zero hassle.
+              Find accommodation and compatible flatmates near your college, workplace, or preferred area.
+              Connect directly with owners. No brokerage.
             </p>
 
             <HeroSearch />
 
             {/* Quick area tags */}
-            <div className={styles.heroTags}>
-              {['Connaught Place', 'Karol Bagh', 'Lajpat Nagar', 'Dwarka', 'Noida', 'Gurugram'].map((area) => (
-                <Link
-                  key={area}
-                  href={`/listings?q=${encodeURIComponent(area)}`}
-                  className={styles.heroTag}
-                >
-                  {area}
-                </Link>
-              ))}
+            <div className={styles.heroTagsWrap}>
+              <span className={styles.heroTagsLabel}>Popular:</span>
+              <div className={styles.heroTags}>
+                {['Connaught Place', 'Karol Bagh', 'Dwarka', 'Noida', 'Gurugram'].map((area) => (
+                  <Link
+                    key={area}
+                    href={`/listings?q=${encodeURIComponent(area)}`}
+                    className={styles.heroTag}
+                  >
+                    {area}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -137,28 +207,33 @@ export default async function HomePage() {
               <span className={styles.badgeText}>Flatmates</span>
             </div>
 
-            <div className={`${styles.heroFloatingBadge} ${styles.badgeMess}`}>
-              <span className={styles.badgeIcon}>🍱</span>
-              <span className={styles.badgeText}>Mess & Meals</span>
-            </div>
-
             <img
               src="/images/hero-girl-cutout-smooth.png"
-              alt="Student exploring PGs, Flats, Mess and Flatmates"
+              alt="Student exploring PGs, Flats and Flatmates"
               className={styles.girlCutoutImg}
             />
           </div>
         </div>
 
-        {/* Stats strip */}
+        {/* Trust strip — only factual product benefits */}
         <div className={styles.heroStats}>
           <div className={`container ${styles.heroStatsGrid}`}>
-            {STATS.map(s => (
-              <div key={s.label} className={styles.statItem}>
-                <span className={styles.statValue}>{s.value}</span>
-                <span className={styles.statLabel}>{s.label}</span>
-              </div>
-            ))}
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>₹0</span>
+              <span className={styles.statLabel}>Brokerage Fees</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>Direct</span>
+              <span className={styles.statLabel}>Owner Contact</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>4 Types</span>
+              <span className={styles.statLabel}>PG · Flat · Flatmate · Mess</span>
+            </div>
+            <div className={styles.statItem}>
+              <span className={styles.statValue}>Free</span>
+              <span className={styles.statLabel}>To Browse & Connect</span>
+            </div>
           </div>
         </div>
       </section>
@@ -167,63 +242,94 @@ export default async function HomePage() {
       <WaveDivider fill="var(--hero-bg)" background="var(--bg)" />
 
       {/* ══════════════════════════════════════════════════
+          HOW IT WORKS
+      ══════════════════════════════════════════════════ */}
+      <section className={`section ${styles.howSection}`}>
+        <div className="container">
+          <div className={styles.sectionHeadCenter}>
+            <span className={styles.sectionEyebrow}>HOW IT WORKS</span>
+            <h2 className={styles.sectionTitle}>Finding your next home is simple.</h2>
+            <p className={styles.sectionSub}>Search, compare and connect without the usual rental hassle.</p>
+          </div>
+
+          <div className={styles.howGrid}>
+            {HOW_IT_WORKS.map((item, i) => (
+              <div key={item.step} className={styles.howCard}>
+                <div className={styles.howStep}>{item.step}</div>
+                {i < HOW_IT_WORKS.length - 1 && (
+                  <div className={styles.howConnector} aria-hidden="true" />
+                )}
+                <h3 className={styles.howTitle}>{item.title}</h3>
+                <p className={styles.howDesc}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
           ABOUT — split layout with image + info card
       ══════════════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
           <div className={styles.aboutGrid}>
-            {/* Left — image with floating info card */}
+            {/* Left — image */}
             <div className={styles.aboutImageWrap}>
               <img
                 src="/images/about-interior.jpg"
-                alt="Modern apartment interior"
+                alt="Modern, comfortable apartment interior"
                 className={styles.aboutImage}
               />
               <div className={styles.aboutFloatCard}>
                 <span className={styles.aboutFloatIcon}>🏠</span>
                 <div>
-                  <p className={styles.aboutFloatValue}>10,000+</p>
-                  <p className={styles.aboutFloatLabel}>Verified Properties</p>
+                  <p className={styles.aboutFloatValue}>Direct</p>
+                  <p className={styles.aboutFloatLabel}>Owner Contact</p>
                 </div>
               </div>
             </div>
 
             {/* Right — content */}
             <div className={styles.aboutContent}>
-              <span className={styles.aboutEyebrow}>ABOUT US</span>
+              <span className={styles.aboutEyebrow}>ABOUT PGFINDER</span>
               <h2 className={styles.aboutTitle}>
-                We Can Help You Find<br />
-                <span className="gradient-text">The Perfect Home!</span>
+                Find your next home<br />
+                <span className="gradient-text">without the usual hassle.</span>
               </h2>
               <p className={styles.aboutBody}>
-                PGFinder connects thousands of genuine seekers with verified property owners
-                across India. No brokerage, no fake listings — just real homes and real people.
-                Whether you&apos;re a student, a working professional, or relocating to a new
-                city, we make finding your next home effortless.
+                PGFinder helps students and working professionals discover accommodation, compare options,
+                and connect directly with property owners — without agents or brokerage fees.
+                Whether you&apos;re looking for a PG, a flat, a flatmate, or a meal service near your
+                college or workplace, we make the process straightforward.
               </p>
 
-              <div className={styles.aboutCta}>
-                <div className={styles.aboutCtaCard}>
-                  <span className={styles.aboutCtaIcon}>🔍</span>
+              <div className={styles.aboutFeats}>
+                <div className={styles.aboutFeat}>
+                  <span className={styles.aboutFeatIcon}>🔍</span>
                   <div>
-                    <p className={styles.aboutCtaTitle}>Browse Listings</p>
-                    <p className={styles.aboutCtaSub}>Find verified PGs & flats near you</p>
+                    <p className={styles.aboutFeatTitle}>Smart Search</p>
+                    <p className={styles.aboutFeatDesc}>Filter by location, type, budget and more to find what fits.</p>
                   </div>
-                  <Link href="/listings" className={styles.aboutCtaBtn}>Browse →</Link>
+                </div>
+                <div className={styles.aboutFeat}>
+                  <span className={styles.aboutFeatIcon}>📋</span>
+                  <div>
+                    <p className={styles.aboutFeatTitle}>Detailed Listings</p>
+                    <p className={styles.aboutFeatDesc}>Photos, amenities, pricing — see everything before reaching out.</p>
+                  </div>
+                </div>
+                <div className={styles.aboutFeat}>
+                  <span className={styles.aboutFeatIcon}>💬</span>
+                  <div>
+                    <p className={styles.aboutFeatTitle}>Direct Contact</p>
+                    <p className={styles.aboutFeatDesc}>Connect with owners directly. No agents, no commission.</p>
+                  </div>
                 </div>
               </div>
 
-              <div className={styles.aboutFeats}>
-                {FEATURES.slice(0, 3).map(f => (
-                  <div key={f.title} className={styles.aboutFeat}>
-                    <span className={styles.aboutFeatIcon}>{f.icon}</span>
-                    <div>
-                      <p className={styles.aboutFeatTitle}>{f.title}</p>
-                      <p className={styles.aboutFeatDesc}>{f.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <Link href="/listings" className={`btn btn-primary ${styles.aboutCta}`}>
+                Browse Listings →
+              </Link>
             </div>
           </div>
         </div>
@@ -234,20 +340,18 @@ export default async function HomePage() {
       ══════════════════════════════════════════════════ */}
       <section className={`section ${styles.serviceSection}`}>
         <div className="container">
-          <div className={styles.sectionHead}>
-            <div>
-              <p className={styles.sectionEyebrow}>OUR SERVICES</p>
-              <h2 className={styles.sectionTitle}>Best Accommodation Options</h2>
-            </div>
+          <div className={styles.sectionHeadCenter}>
+            <span className={styles.sectionEyebrow}>ACCOMMODATION TYPES</span>
+            <h2 className={styles.sectionTitle}>What are you looking for?</h2>
             <p className={styles.sectionSub}>Choose your accommodation type to get started</p>
           </div>
           <div className={styles.servicesGrid}>
             {SERVICES.map(s => (
               <ServiceCard
                 key={s.type}
-                icon={s.icon}
                 label={s.label}
                 desc={s.desc}
+                cta={s.cta}
                 href={`/listings?type=${s.type}`}
                 imageSrc={s.imageSrc}
               />
@@ -264,8 +368,8 @@ export default async function HomePage() {
           <div className="container">
             <div className={styles.sectionHeadCenter}>
               <span className={styles.featuredBadge}>✨ Featured</span>
-              <h2 className={styles.sectionTitle}>Featured Listings Near You</h2>
-              <p className={styles.sectionSub}>Check out some of the best PGs and flats</p>
+              <h2 className={styles.sectionTitle}>Featured Listings</h2>
+              <p className={styles.sectionSub}>Browse some of the latest PGs and flats on PGFinder</p>
             </div>
           </div>
           <CoverflowCarousel listings={listings} />
@@ -278,23 +382,21 @@ export default async function HomePage() {
       )}
 
       {/* ══════════════════════════════════════════════════
-          MORE FEATURES grid
+          WHY PGFINDER
       ══════════════════════════════════════════════════ */}
       <section className="section">
         <div className="container">
-          <div className={styles.sectionHead}>
-            <div>
-              <p className={styles.sectionEyebrow}>OUR BENEFITS</p>
-              <h2 className={styles.sectionTitle}>Why PGFinder?</h2>
-            </div>
-            <p className={styles.sectionSub}>Everything you need to find your next home</p>
+          <div className={styles.sectionHeadCenter}>
+            <span className={styles.sectionEyebrow}>WHY PGFINDER</span>
+            <h2 className={styles.sectionTitle}>Why choose PGFinder?</h2>
+            <p className={styles.sectionSub}>Everything you need to find your next home, in one place.</p>
           </div>
-          <div className={styles.featuresGrid}>
-            {FEATURES.map(f => (
-              <div key={f.title} className={styles.featureCard}>
-                <span className={styles.featureIconCircle}>{f.icon}</span>
-                <h3 className={styles.featureTitle}>{f.title}</h3>
-                <p className={styles.featureDesc}>{f.desc}</p>
+          <div className={styles.whyGrid}>
+            {WHY_PGFINDER.map(w => (
+              <div key={w.title} className={styles.whyCard}>
+                <span className={styles.whyIcon}>{w.icon}</span>
+                <h3 className={styles.whyTitle}>{w.title}</h3>
+                <p className={styles.whyDesc}>{w.desc}</p>
               </div>
             ))}
           </div>
@@ -302,7 +404,35 @@ export default async function HomePage() {
       </section>
 
       {/* ══════════════════════════════════════════════════
-          CTA BANNER — dark teal, two column
+          SAFETY GUIDANCE
+      ══════════════════════════════════════════════════ */}
+      <section className={`section ${styles.safetySection}`}>
+        <div className="container">
+          <div className={styles.safetyInner}>
+            <div className={styles.safetyHead}>
+              <span className={styles.sectionEyebrow}>STAY INFORMED</span>
+              <h2 className={styles.safetyTitle}>Find a place. Stay safe.</h2>
+              <p className={styles.safetySub}>
+                PGFinder connects you directly with owners. Here are a few things to keep in mind.
+              </p>
+            </div>
+            <div className={styles.safetyCards}>
+              {SAFETY_TIPS.map(tip => (
+                <div key={tip.title} className={styles.safetyCard}>
+                  <span className={styles.safetyIcon}>{tip.icon}</span>
+                  <div>
+                    <p className={styles.safetyCardTitle}>{tip.title}</p>
+                    <p className={styles.safetyCardDesc}>{tip.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
+          CTA BANNER — for property owners
       ══════════════════════════════════════════════════ */}
       <section className={styles.ctaSection}>
         <div className={styles.ctaGlow} />
@@ -310,15 +440,14 @@ export default async function HomePage() {
           <div className={styles.ctaLeft}>
             <p className={styles.ctaEyebrow}>FOR PROPERTY OWNERS</p>
             <h2 className={styles.ctaTitle}>
-              Comfort Are Perfectly<br />Combined Here!
+              List Your Property.<br />Find the Right Tenant.
             </h2>
             <p className={styles.ctaSub}>
-              Reach thousands of genuine seekers. No commission, no brokerage.
-              Your listing goes live in minutes.
+              Reach genuine renters directly. Create your listing in minutes without unnecessary brokerage.
             </p>
             <div className={styles.ctaActions}>
               <Link href="/dashboard/new" className="btn btn-primary">
-                Post Your Listing →
+                List Your Property →
               </Link>
               <Link href="/auth/register" className={styles.ctaSecondaryBtn}>
                 Create Free Account
@@ -327,7 +456,7 @@ export default async function HomePage() {
           </div>
 
           <div className={styles.ctaBenefits}>
-            {BENEFITS.map(b => (
+            {OWNER_BENEFITS.map(b => (
               <div key={b.title} className={styles.benefitCard}>
                 <span className={styles.benefitIcon}>{b.icon}</span>
                 <div>

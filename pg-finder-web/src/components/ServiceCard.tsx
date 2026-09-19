@@ -4,15 +4,15 @@ import Link from 'next/link';
 import styles from './ServiceCard.module.css';
 
 interface Props {
-  icon: string;
   label: string;
   desc: string;
   href: string;
-  imageSrc: string;   /* path to background photo */
-  overlayColor?: string; /* optional tint on top of photo, default semi-dark */
+  imageSrc: string;
+  cta?: string;
+  overlayColor?: string;
 }
 
-export default function ServiceCard({ icon, label, desc, href, imageSrc, overlayColor }: Props) {
+export default function ServiceCard({ label, desc, href, imageSrc, cta, overlayColor }: Props) {
   return (
     <Link href={href} className={styles.card}>
       {/* Background photo */}
@@ -24,16 +24,13 @@ export default function ServiceCard({ icon, label, desc, href, imageSrc, overlay
         style={overlayColor ? { background: overlayColor } : undefined}
       />
 
-      {/* Icon circle */}
-      <div className={styles.iconWrap}>
-        <span className={styles.icon}>{icon}</span>
-      </div>
-
       {/* Text */}
       <div className={styles.body}>
         <h3 className={styles.label}>{label}</h3>
         <p className={styles.desc}>{desc}</p>
-        <span className={styles.arrow}>→</span>
+        <span className={styles.cta}>
+          {cta || 'Explore'} <span className={styles.ctaArrow}>→</span>
+        </span>
       </div>
     </Link>
   );
