@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Listing } from '@/lib/api';
+import SaveButton from './SaveButton';
 import styles from './ListingCard.module.css';
 
 const TYPE_LABELS: Record<string, string> = {
@@ -36,6 +37,9 @@ export default function ListingCard({ listing }: Props) {
           </div>
         )}
 
+        {/* Cinematic gradient overlay */}
+        {photo && <div className={styles.photoGradient} />}
+
         {/* Overlaid price badge — bottom left */}
         <div className={styles.priceBadge}>
           <span className={styles.priceValue}>{formatRent(listing.rent)}</span>
@@ -45,7 +49,10 @@ export default function ListingCard({ listing }: Props) {
         {/* Type badge — top left */}
         <span className={styles.typeBadge}>{TYPE_LABELS[listing.type]}</span>
 
-        {/* Rating — top right */}
+        {/* Save button — top right */}
+        <SaveButton listingId={listing.id} />
+
+        {/* Rating — top right (shift when no save btn?) */}
         {rating && <span className={styles.ratingBadge}>⭐ {rating}</span>}
       </div>
 

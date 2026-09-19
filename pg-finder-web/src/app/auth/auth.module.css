@@ -1,32 +1,205 @@
+/* ══════════════════════════════════════════════════════════
+   Auth Pages (Login + Register) — PGFinder Design System
+   ══════════════════════════════════════════════════════════ */
+
 .page {
   min-height: calc(100vh - var(--nav-h));
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* ── Left panel (desktop decoration) ────────────────────── */
+.leftPanel {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 56px;
+  background: var(--hero-bg);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+}
+
+.leftPanel::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: -80px;
+  width: 500px; height: 500px;
+  background: radial-gradient(ellipse, rgba(13,148,136,0.2) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.leftPanel::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; right: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(ellipse, rgba(45,212,191,0.1) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.leftContent {
+  position: relative;
+  z-index: 1;
+}
+
+.leftLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 48px;
+}
+.leftLogoIcon { font-size: 28px; }
+.leftLogoText {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.leftLogoDot { color: var(--primary-light); }
+
+.leftHeading {
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin-bottom: 16px;
+}
+
+.leftAccent {
+  color: var(--primary-light);
+}
+
+.leftSub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+.leftFeatures {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.leftFeature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s, background 0.2s;
+}
+.leftFeature:hover {
+  background: rgba(13,148,136,0.1);
+  border-color: rgba(45,212,191,0.25);
+}
+
+.leftFeatureIcon {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-md);
+  background: rgba(13,148,136,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.leftFeatureTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.leftFeatureSub {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 2px;
+}
+
+/* ── Right panel (the form) ──────────────────────────────── */
+.rightPanel {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 24px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.1) 0%, transparent 60%);
+  background: var(--bg);
 }
 
 .card {
+  width: 100%;
+  max-width: 480px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  padding: 48px;
-  width: 100%;
-  max-width: 520px;
+  padding: 44px 40px;
   box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light), var(--primary));
 }
 
 .cardHeader { text-align: center; margin-bottom: 32px; }
-.backLogo { font-size: 18px; font-weight: 900; color: var(--text); display: block; margin-bottom: 24px; }
-.title { font-size: 28px; font-weight: 900; color: var(--text); letter-spacing: -0.5px; }
+
+.backLogo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 28px;
+  letter-spacing: -0.3px;
+}
+.backLogo:hover { color: var(--primary-light); }
+
+.logoDot { color: var(--primary-light); }
+
+.title {
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
 .sub { font-size: 15px; color: var(--text-muted); margin-top: 6px; }
 
-.form { display: flex; flex-direction: column; gap: 20px; }
+.form { display: flex; flex-direction: column; gap: 18px; }
 
 .field { display: flex; flex-direction: column; gap: 8px; }
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.label { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.forgotLink {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.forgotLink:hover {
+  text-decoration: underline;
+}
 .optional { font-weight: 400; color: var(--text-faint); }
 
 .error {
@@ -36,20 +209,31 @@
   border-radius: var(--radius-md);
   padding: 12px 16px;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .submitBtn {
   width: 100%;
   justify-content: center;
-  padding: 14px !important;
+  padding: 15px !important;
   font-size: 16px !important;
   border-radius: var(--radius-md) !important;
-  margin-top: 4px;
+  margin-top: 8px;
+  box-shadow: 0 6px 20px rgba(13,148,136,0.35);
+}
+.submitBtn:hover {
+  box-shadow: 0 10px 28px rgba(13,148,136,0.5) !important;
 }
 
 .switch { text-align: center; font-size: 14px; color: var(--text-muted); margin-top: 24px; }
-.switchLink { color: var(--primary-light); font-weight: 600; }
+.switchLink { color: var(--primary-light); font-weight: 700; }
 .switchLink:hover { text-decoration: underline; }
+
+@media (min-width: 900px) {
+  .leftPanel { display: flex; min-width: 420px; max-width: 46%; }
+}
 
 @media (max-width: 560px) {
   .card { padding: 32px 24px; }

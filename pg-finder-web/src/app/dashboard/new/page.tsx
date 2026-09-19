@@ -4,11 +4,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { listingsApi } from '@/lib/api';
+import PhotoUploader, { type UploadedPhoto } from '@/components/PhotoUploader';
 import styles from './page.module.css';
 
 const TYPES = ['pg', 'flat', 'flatmate', 'mess'];
 const FOOD_OPTIONS = ['veg', 'nonveg', 'jain', 'any', 'none'];
 const AMENITIES = ['wifi', 'ac', 'parking', 'laundry', 'gym', 'security', 'power_backup', 'water_supply', 'meals_included', 'furnished'];
+const TOTAL_STEPS = 4;
+const STEP_LABELS = ['Basic Info', 'Location', 'Amenities', 'Photos'];
 
 export default function NewListingPage() {
   const { user, loading } = useAuth();
@@ -16,6 +19,7 @@ export default function NewListingPage() {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [photos, setPhotos] = useState<UploadedPhoto[]>([]);
   const [form, setForm] = useState({
     type: 'pg', title: '', description: '',
     rent: '', deposit: '', food_type: 'any',
@@ -34,6 +38,7 @@ export default function NewListingPage() {
     if (!user) { router.push('/auth/login'); return; }
     setSubmitting(true); setError('');
     try {
+      // 1. Create the listing record
       const { listing } = await listingsApi.create({
         type: form.type as 'pg' | 'flat' | 'flatmate' | 'mess',
         title: form.title, description: form.description || undefined,
@@ -43,6 +48,15 @@ export default function NewListingPage() {
         latitude: Number(form.latitude), longitude: Number(form.longitude),
         amenities: form.amenities,
       });
+
+      // 2. Attach photos if any were uploaded
+      if (photos.length > 0) {
+        await listingsApi.addMedia(
+          listing.id,
+          photos.map((p, i) => ({ url: p.url, kind: 'photo', position: i }))
+        );
+      }
+
       router.push(`/listings/${listing.id}`);
     } catch (err: any) {
       setError(err.message ?? 'Failed to create listing');
@@ -61,20 +75,26 @@ export default function NewListingPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={`container ${styles.inner}`}>
-        <div className={styles.header}>
-          <Link href="/dashboard" className={styles.back}>← Dashboard</Link>
-          <h1 className={styles.title}>Post a Listing</h1>
-          <p className={styles.sub}>Step {step} of 3</p>
+    <div>
+      {/* Page Hero */}
+      <div className={styles.pageHero}>
+        <div className="container">
+          <span className={styles.heroEyebrow}>Post Listing</span>
+          <h1 className={styles.heroTitle}>Post a New Listing</h1>
+          <p className={styles.heroSub}>Step {step} of {TOTAL_STEPS} — {STEP_LABELS[step - 1]}</p>
         </div>
+      </div>
+
+      <div className={styles.page}>
+      <div className={`container ${styles.inner}`}>
+        <Link href="/dashboard" className={styles.back}>← Back to Dashboard</Link>
 
         {/* Progress */}
         <div className={styles.progress}>
-          {[1, 2, 3].map((s) => (
+          {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((s) => (
             <div key={s} className={`${styles.step} ${step >= s ? styles.stepDone : ''}`}>
               <div className={styles.stepDot}>{step > s ? '✓' : s}</div>
-              <span className={styles.stepLabel}>{['Basic Info', 'Location', 'Amenities'][s - 1]}</span>
+              <span className={styles.stepLabel}>{STEP_LABELS[s - 1]}</span>
             </div>
           ))}
         </div>
@@ -82,7 +102,7 @@ export default function NewListingPage() {
         <div className={styles.form}>
           {error && <div className={styles.error}>{error}</div>}
 
-          {/* Step 1 */}
+          {/* ── Step 1: Basic Info ── */}
           {step === 1 && (
             <div className={styles.fields}>
               <h2 className={styles.stepTitle}>Basic Information</h2>
@@ -139,7 +159,7 @@ export default function NewListingPage() {
             </div>
           )}
 
-          {/* Step 2 */}
+          {/* ── Step 2: Location ── */}
           {step === 2 && (
             <div className={styles.fields}>
               <h2 className={styles.stepTitle}>Location Details</h2>
@@ -168,7 +188,7 @@ export default function NewListingPage() {
               </div>
 
               <p style={{ fontSize: 13, color: 'var(--text-faint)' }}>
-                💡 Tip: Search your address on Google Maps, right-click and copy coordinates
+                💡 Tip: Search your address on Google Maps, right-click → copy coordinates
               </p>
 
               <div style={{ display: 'flex', gap: 12 }}>
@@ -181,7 +201,7 @@ export default function NewListingPage() {
             </div>
           )}
 
-          {/* Step 3 */}
+          {/* ── Step 3: Amenities ── */}
           {step === 3 && (
             <div className={styles.fields}>
               <h2 className={styles.stepTitle}>Amenities</h2>
@@ -195,24 +215,53 @@ export default function NewListingPage() {
                 ))}
               </div>
 
+              <div style={{ display: 'flex', gap: 12 }}>
+                <button className="btn btn-outline" onClick={() => setStep(2)} style={{ flex: 1, justifyContent: 'center' }}>← Back</button>
+                <button className="btn btn-primary" onClick={() => setStep(4)}
+                  style={{ flex: 1, justifyContent: 'center' }}>
+                  Next: Photos →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── Step 4: Photos ── */}
+          {step === 4 && (
+            <div className={styles.fields}>
+              <h2 className={styles.stepTitle}>Add Photos</h2>
+              <p style={{ fontSize: 14, color: 'var(--text-muted)', marginTop: -8 }}>
+                Great photos get 3× more inquiries. The first photo appears on the listing card.
+              </p>
+
+              <PhotoUploader
+                folder={`listings/${user?.id}`}
+                maxPhotos={8}
+                initialPhotos={photos}
+                onChange={setPhotos}
+                label="Upload Listing Photos"
+              />
+
+              {/* Summary */}
               <div className={styles.preview}>
                 <h3 className={styles.previewTitle}>📋 Listing Summary</h3>
                 <p><strong>{form.title}</strong></p>
                 <p>Type: {form.type} • Rent: ₹{Number(form.rent).toLocaleString()}/mo</p>
                 <p>📍 {form.address}, {form.city}</p>
-                <p>Amenities: {Object.keys(form.amenities).filter((k) => form.amenities[k]).join(', ') || 'None selected'}</p>
+                <p>Amenities: {Object.keys(form.amenities).filter((k) => form.amenities[k]).join(', ') || 'None'}</p>
+                <p>Photos: {photos.length > 0 ? `${photos.length} photo${photos.length > 1 ? 's' : ''} ready` : 'None (you can add later)'}</p>
               </div>
 
               <div style={{ display: 'flex', gap: 12 }}>
-                <button className="btn btn-outline" onClick={() => setStep(2)} style={{ flex: 1, justifyContent: 'center' }}>← Back</button>
+                <button className="btn btn-outline" onClick={() => setStep(3)} style={{ flex: 1, justifyContent: 'center' }}>← Back</button>
                 <button className="btn btn-primary" onClick={handleSubmit}
                   style={{ flex: 1, justifyContent: 'center' }} disabled={submitting}>
-                  {submitting ? 'Posting...' : '🚀 Post Listing'}
+                  {submitting ? 'Publishing...' : '🚀 Publish Listing'}
                 </button>
               </div>
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

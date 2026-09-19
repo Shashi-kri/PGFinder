@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -26,7 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <ThemeProvider>
           <AuthProvider>
-            <Navbar />
+            <Suspense fallback={<div style={{ height: 'var(--nav-h)' }} />}>
+              <Navbar />
+            </Suspense>
             <main style={{ paddingTop: 'var(--nav-h)' }}>
               {children}
             </main>

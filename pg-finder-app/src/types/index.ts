@@ -51,6 +51,7 @@ export interface Media {
 export interface OwnerSummary {
   id: string;
   name: string | null;
+  phone?: string | null;
   verified: boolean;
   verification_type: VerificationType;
 }

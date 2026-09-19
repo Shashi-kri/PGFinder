@@ -112,6 +112,49 @@ export async function getMe(): Promise<AuthUser> {
   }
 }
 
+export async function forgotPassword(target: string): Promise<{ message: string; debug_code?: string }> {
+  try {
+    const { data } = await client.post<{ message: string; debug_code?: string }>('/api/auth/forgot-password', { target });
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function verifyOtp(target: string, code: string): Promise<{ valid: boolean; message: string }> {
+  try {
+    const { data } = await client.post<{ valid: boolean; message: string }>('/api/auth/verify-otp', { target, code });
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function resetPassword(target: string, code: string, newPassword: string): Promise<{ message: string }> {
+  try {
+    const { data } = await client.post<{ message: string }>('/api/auth/reset-password', {
+      target,
+      code,
+      new_password: newPassword,
+    });
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+  try {
+    const { data } = await client.post<{ message: string }>('/api/auth/change-password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+    return data;
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Listings
 // ---------------------------------------------------------------------------
@@ -208,6 +251,29 @@ export async function addReview(
 ): Promise<void> {
   try {
     await client.post(`/api/listings/${listingId}/reviews`, { rating, comment });
+  } catch (err) {
+    throw toApiError(err);
+  }
+}
+
+export interface ReviewItem {
+  id: string;
+  listing_id: string;
+  author_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  author_name: string;
+  author_photo?: string | null;
+}
+
+/** GET /api/listings/:id/reviews (public) */
+export async function getReviews(listingId: string): Promise<ReviewItem[]> {
+  try {
+    const { data } = await client.get<{ reviews: ReviewItem[]; count: number }>(
+      `/api/listings/${listingId}/reviews`
+    );
+    return data.reviews ?? [];
   } catch (err) {
     throw toApiError(err);
   }

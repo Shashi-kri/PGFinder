@@ -99,16 +99,6 @@ export default function CoverflowCarousel({ listings }: Props) {
          onTouchStart={onTouchStart}
          onTouchEnd={onTouchEnd}
     >
-      {/* Floating ambient labels */}
-      <div className={`${styles.floatLabel} ${styles.floatLeft}`}>
-        <span className={styles.floatAvatar}>🏡</span>
-        <span>Zero Brokerage</span>
-      </div>
-      <div className={`${styles.floatLabel} ${styles.floatRight}`}>
-        <span className={styles.floatAvatar}>✅</span>
-        <span>Verified</span>
-      </div>
-
       {/* Card track */}
       <div className={styles.track}>
         {listings.map((listing, i) => {

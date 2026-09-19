@@ -151,6 +151,13 @@
   justify-content: center;
 }
 
+.avatarPhoto {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+
 .userName { font-size: 14px; font-weight: 600; color: var(--text); }
 .chevDown { font-size: 11px; color: var(--text-muted); }
 

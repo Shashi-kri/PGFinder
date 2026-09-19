@@ -170,17 +170,30 @@ export async function searchListings(req, res, next) {
 
     const sql = `
       SELECT
-        id, owner_id, type, title, description, rent, deposit, food_type,
-        ST_Y(geom::geometry) AS latitude,
-        ST_X(geom::geometry) AS longitude,
-        address, city, amenities, rules, availability, verified, status,
-        created_at,
+        l.id, l.owner_id, l.type, l.title, l.description, l.rent, l.deposit, l.food_type,
+        ST_Y(l.geom::geometry) AS latitude,
+        ST_X(l.geom::geometry) AS longitude,
+        l.address, l.city, l.amenities, l.rules, l.availability, l.verified, l.status,
+        l.created_at,
         ST_Distance(
-          geom,
+          l.geom,
           ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
-        ) AS dist_m
-      FROM listings
-      WHERE ${where.join('\n        AND ')}
+        ) AS dist_m,
+        COALESCE(
+          (SELECT json_agg(json_build_object('url', m.url, 'kind', m.kind) ORDER BY m.position)
+           FROM media m WHERE m.listing_id = l.id),
+          '[]'::json
+        ) AS photos,
+        COALESCE(r.avg_rating, 0)   AS avg_rating,
+        COALESCE(r.review_count, 0) AS review_count
+      FROM listings l
+      LEFT JOIN (
+        SELECT listing_id,
+               ROUND(AVG(rating)::numeric, 2) AS avg_rating,
+               COUNT(*) AS review_count
+        FROM reviews GROUP BY listing_id
+      ) r ON r.listing_id = l.id
+      WHERE ${where.map(w => w.replace(/^(\w+)/, 'l.$1').replace(/l.ST_DWithin/, 'ST_DWithin')).join('\n        AND ')}
       ORDER BY dist_m ASC
       LIMIT $${limitIdx} OFFSET $${offsetIdx}
     `;
@@ -212,8 +225,12 @@ export async function signUpload(req, res, next) {
   try {
     const timestamp = Math.round(Date.now() / 1000);
 
-    // Scope uploads to a per-user folder for organization + easier cleanup.
-    const folder = `listings/${req.user.id}`;
+    // Accept an optional folder from the client (e.g. "avatars/<uid>").
+    // Whitelist allowed prefixes to prevent abuse.
+    const requestedFolder = req.body?.folder ?? '';
+    const allowedPrefixes = ['listings/', 'avatars/'];
+    const isAllowed = allowedPrefixes.some(p => requestedFolder.startsWith(p));
+    const folder = isAllowed ? requestedFolder : `listings/${req.user.id}`;
 
     // Every param included here must also be sent by the client, verbatim.
     const paramsToSign = {
@@ -369,6 +386,7 @@ export async function getListingById(req, res, next) {
         json_build_object(
           'id', o.id,
           'name', o.name,
+          'phone', o.phone,
           'verified', o.verified,
           'verification_type', o.verification_type
         ) AS owner,
@@ -423,6 +441,123 @@ export async function getListingById(req, res, next) {
   }
 }
 
+// ---------- GET /api/listings/mine -----------------------------------------
+
+/**
+ * Return the authenticated user's own listings (all statuses).
+ * Includes media, rating, and distance from New Delhi as a default.
+ */
+export async function getMyListings(req, res, next) {
+  try {
+    const { rows } = await query(
+      `
+      SELECT
+        l.id, l.owner_id, l.type, l.title, l.description,
+        l.rent, l.deposit, l.food_type,
+        ST_Y(l.geom::geometry) AS latitude,
+        ST_X(l.geom::geometry) AS longitude,
+        l.address, l.city, l.amenities, l.availability, l.verified, l.status,
+        l.created_at, l.updated_at,
+        COALESCE(
+          (SELECT json_agg(json_build_object('url', m.url, 'kind', m.kind) ORDER BY m.position)
+           FROM media m WHERE m.listing_id = l.id),
+          '[]'::json
+        ) AS photos,
+        COALESCE(r.avg_rating, 0)   AS avg_rating,
+        COALESCE(r.review_count, 0) AS review_count
+      FROM listings l
+      LEFT JOIN (
+        SELECT listing_id,
+               ROUND(AVG(rating)::numeric, 2) AS avg_rating,
+               COUNT(*) AS review_count
+        FROM reviews GROUP BY listing_id
+      ) r ON r.listing_id = l.id
+      WHERE l.owner_id = $1
+      ORDER BY l.created_at DESC
+      `,
+      [req.user.id]
+    );
+
+    return res.json({ listings: rows, total: rows.length });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+// ---------- PATCH /api/listings/:id ----------------------------------------
+
+/**
+ * Partially update a listing. Only the listing's owner may edit (403 otherwise).
+ * Body can include any subset of: type, title, description, rent, deposit,
+ * food_type, latitude, longitude, address, city, amenities, availability.
+ */
+export async function updateListing(req, res, next) {
+  try {
+    const listingId = req.params.id;
+
+    // Ownership check
+    const check = await query('SELECT owner_id FROM listings WHERE id = $1', [listingId]);
+    if (check.rowCount === 0) return res.status(404).json({ error: 'Listing not found' });
+    if (check.rows[0].owner_id !== req.user.id) return res.status(403).json({ error: 'Forbidden' });
+
+    const body = req.body ?? {};
+    const setClauses = [];
+    const params = [];
+
+    const push = (val) => { params.push(val); return `$${params.length}`; };
+
+    if (body.title       !== undefined) setClauses.push(`title = ${push(String(body.title).trim())}`);
+    if (body.description !== undefined) setClauses.push(`description = ${push(body.description ?? null)}`);
+    if (body.rent        !== undefined) {
+      const r = num(body.rent);
+      if (r === null || r < 0) return res.status(400).json({ error: 'rent must be a non-negative number' });
+      setClauses.push(`rent = ${push(r)}`);
+    }
+    if (body.deposit !== undefined) {
+      const d = num(body.deposit);
+      setClauses.push(`deposit = ${push(d ?? 0)}`);
+    }
+    if (body.food_type !== undefined) {
+      if (!FOOD_TYPES.has(body.food_type)) return res.status(400).json({ error: 'invalid food_type' });
+      setClauses.push(`food_type = ${push(body.food_type)}`);
+    }
+    if (body.type !== undefined) {
+      if (!LISTING_TYPES.has(body.type)) return res.status(400).json({ error: 'invalid type' });
+      setClauses.push(`type = ${push(body.type)}`);
+    }
+    if (body.address      !== undefined) setClauses.push(`address = ${push(body.address ?? null)}`);
+    if (body.city         !== undefined) setClauses.push(`city = ${push(body.city ?? null)}`);
+    if (body.amenities    !== undefined) setClauses.push(`amenities = ${push(JSON.stringify(body.amenities))}`);
+    if (body.availability !== undefined) setClauses.push(`availability = ${push(body.availability)}`);
+
+    // Coordinates — update geom only when both are provided together
+    if (body.latitude !== undefined && body.longitude !== undefined) {
+      const lat = num(body.latitude);
+      const lng = num(body.longitude);
+      if (!isValidLat(lat) || !isValidLng(lng)) return res.status(400).json({ error: 'invalid coordinates' });
+      setClauses.push(`geom = ST_SetSRID(ST_MakePoint(${push(lng)}, ${push(lat)}), 4326)::geography`);
+    }
+
+    if (setClauses.length === 0) return res.status(400).json({ error: 'No fields to update' });
+
+    setClauses.push(`updated_at = now()`);
+    params.push(listingId);
+
+    const { rows } = await query(
+      `UPDATE listings SET ${setClauses.join(', ')}
+       WHERE id = $${params.length}
+       RETURNING id, owner_id, type, title, description, rent, deposit, food_type,
+         ST_Y(geom::geometry) AS latitude, ST_X(geom::geometry) AS longitude,
+         address, city, amenities, availability, status, updated_at`,
+      params
+    );
+
+    return res.json({ listing: rows[0] });
+  } catch (err) {
+    return next(err);
+  }
+}
+
 // ---------- POST /api/listings/:id/reviews --------------------------------
 /** Add or update a review for a listing (auth required). */
 export async function addReview(req, res, next) {
@@ -448,6 +583,30 @@ export async function addReview(req, res, next) {
     );
 
     return res.status(201).json({ review: rows[0] });
+  } catch (err) {
+    return next(err);
+  }
+}
+
+// ---------- GET /api/listings/:id/reviews ---------------------------------
+/** Get all reviews for a listing with author details (public). */
+export async function getReviews(req, res, next) {
+  try {
+    const listingId = req.params.id;
+    const { rows } = await query(
+      `
+      SELECT
+        r.id, r.listing_id, r.author_id, r.rating, r.comment, r.created_at,
+        u.name AS author_name, u.photo_url AS author_photo
+      FROM reviews r
+      JOIN users u ON u.id = r.author_id
+      WHERE r.listing_id = $1
+      ORDER BY r.created_at DESC
+      `,
+      [listingId]
+    );
+
+    return res.json({ reviews: rows, count: rows.length });
   } catch (err) {
     return next(err);
   }

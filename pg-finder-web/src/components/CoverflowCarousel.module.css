@@ -2,6 +2,22 @@
 /*  CoverflowCarousel styles                                  */
 /* ────────────────────────────────────────────────────────── */
 
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(32px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 24px 80px rgba(0,0,0,0.55), 0 0 0 1.5px var(--primary); }
+  50%       { box-shadow: 0 28px 90px rgba(0,0,0,0.6),  0 0 0 2px var(--primary-light), 0 0 30px rgba(13,148,136,0.25); }
+}
+
 .section {
   position: relative;
   padding: 20px 0 60px;
@@ -73,7 +89,7 @@
 }
 
 .cardActive {
-  box-shadow: 0 24px 80px rgba(0,0,0,0.55), 0 0 0 1.5px var(--primary);
+  animation: glowPulse 2.5s ease-in-out infinite;
 }
 
 /* Photo area */

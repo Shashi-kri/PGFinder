@@ -56,16 +56,16 @@ $$ LANGUAGE plpgsql;
 
 -- ============================================================================
 -- users
---   firebase_uid is the join key to Firebase Auth. It is UNIQUE and NOT NULL
---   because every app user authenticates through Firebase.
+--   Supports both email/password auth (password_hash) and Firebase Auth (firebase_uid).
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS users (
   id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  firebase_uid      TEXT        NOT NULL UNIQUE,
+  firebase_uid      TEXT        UNIQUE,
   role              user_role   NOT NULL DEFAULT 'seeker',
   name              TEXT,
   email             TEXT        UNIQUE,
-  phone             TEXT        UNIQUE,
+  password_hash     TEXT,
+  phone             TEXT,
   photo_url         TEXT,
   verified          BOOLEAN     NOT NULL DEFAULT false,
   verification_type verification_kind NOT NULL DEFAULT 'none',
@@ -204,4 +204,22 @@ CREATE TABLE IF NOT EXISTS user_favorites (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (user_id, listing_id)
 );
+
+-- ============================================================================
+-- verification_codes (password reset / phone & email verification codes)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS verification_codes (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  target      TEXT NOT NULL,
+  code        TEXT NOT NULL,
+  type        TEXT NOT NULL DEFAULT 'password_reset',
+  expires_at  TIMESTAMPTZ NOT NULL,
+  used        BOOLEAN NOT NULL DEFAULT false,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_verification_codes_target
+  ON verification_codes (target, used, expires_at);
+
 

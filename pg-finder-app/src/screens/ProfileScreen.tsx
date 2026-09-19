@@ -7,6 +7,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, font, spacing } from '../theme';
 import { useAuth } from '../context/AuthContext';
+import { forgotPassword, resetPassword, changePassword } from '../services/api';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { RootTabParamList } from '../navigation/types';
 
@@ -16,7 +17,7 @@ export default function ProfileScreen({ navigation }: Props) {
   const { user, signIn, signUp, signOut } = useAuth();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [tab, setTab] = useState<'login' | 'register'>('login');
+  const [tab, setTab] = useState<'login' | 'register' | 'forgot'>('login');
   const [busy, setBusy] = useState(false);
 
   // Login fields
@@ -30,11 +31,35 @@ export default function ProfileScreen({ navigation }: Props) {
   const [regPassword, setRegPassword] = useState('');
   const [regConfirm, setRegConfirm] = useState('');
 
+  // Forgot password fields
+  const [forgotStep, setForgotStep] = useState<1 | 2>(1);
+  const [forgotTarget, setForgotTarget] = useState('');
+  const [forgotCode, setForgotCode] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState('');
+
+  // Change password fields (when logged in)
+  const [changePwdModalVisible, setChangePwdModalVisible] = useState(false);
+  const [currPassword, setCurrPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [changePwdBusy, setChangePwdBusy] = useState(false);
+
   const closeModal = () => {
     setModalVisible(false);
+    setTab('login');
+    setForgotStep(1);
     setLoginEmail(''); setLoginPassword('');
     setRegName(''); setRegEmail(''); setRegPhone('');
     setRegPassword(''); setRegConfirm('');
+    setForgotTarget(''); setForgotCode(''); setForgotNewPassword(''); setForgotConfirmPassword('');
+  };
+
+  const closeChangePwdModal = () => {
+    setChangePwdModalVisible(false);
+    setCurrPassword('');
+    setNewPassword('');
+    setConfirmNewPassword('');
   };
 
   const handleLogin = async () => {
@@ -74,6 +99,79 @@ export default function ProfileScreen({ navigation }: Props) {
     }
   };
 
+  const handleSendForgotCode = async () => {
+    if (!forgotTarget.trim()) {
+      Alert.alert('Required', 'Please enter your registered email or phone number.');
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await forgotPassword(forgotTarget.trim());
+      Alert.alert(
+        'Code Sent',
+        res.message + (res.debug_code ? `\n\n(Dev OTP: ${res.debug_code})` : '')
+      );
+      setForgotStep(2);
+    } catch (err: any) {
+      Alert.alert('Error', err.message ?? 'Failed to send reset code');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!forgotCode.trim() || forgotCode.trim().length !== 6) {
+      Alert.alert('Invalid Code', 'Please enter the 6-digit verification code.');
+      return;
+    }
+    if (!forgotNewPassword || forgotNewPassword.length < 6) {
+      Alert.alert('Weak Password', 'Password must be at least 6 characters.');
+      return;
+    }
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      Alert.alert('Mismatch', 'Passwords do not match.');
+      return;
+    }
+    setBusy(true);
+    try {
+      await resetPassword(forgotTarget.trim(), forgotCode.trim(), forgotNewPassword);
+      Alert.alert('Success 🎉', 'Password reset successfully! Please log in with your new password.');
+      setTab('login');
+      setForgotStep(1);
+      setLoginEmail(forgotTarget.trim());
+      setLoginPassword('');
+    } catch (err: any) {
+      Alert.alert('Reset Failed', err.message ?? 'Failed to reset password');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!currPassword || !newPassword) {
+      Alert.alert('Required', 'Please fill in current and new password.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      Alert.alert('Weak Password', 'New password must be at least 6 characters.');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      Alert.alert('Mismatch', 'New passwords do not match.');
+      return;
+    }
+    setChangePwdBusy(true);
+    try {
+      await changePassword(currPassword, newPassword);
+      Alert.alert('Success 🔒', 'Your password has been changed successfully.');
+      closeChangePwdModal();
+    } catch (err: any) {
+      Alert.alert('Error', err.message ?? 'Failed to change password');
+    } finally {
+      setChangePwdBusy(false);
+    }
+  };
+
   const rows = [
     {
       icon: '🏠',
@@ -93,6 +191,12 @@ export default function ProfileScreen({ navigation }: Props) {
       hint: 'Your shortlisted properties',
       onPress: () => navigation.getParent()?.navigate('SavedListings'),
     },
+    ...(user ? [{
+      icon: '🔒',
+      label: 'Change Password',
+      hint: 'Update your account password',
+      onPress: () => setChangePwdModalVisible(true),
+    }] : []),
     { icon: '✅', label: 'ID Verification', hint: 'Student / professional ID badge' },
   ];
 
@@ -151,24 +255,35 @@ export default function ProfileScreen({ navigation }: Props) {
           <Pressable style={StyleSheet.absoluteFill} onPress={closeModal} />
           <View style={styles.modalCard}>
             {/* Tab switcher */}
-            <View style={styles.tabs}>
-              <Pressable
-                style={[styles.tab, tab === 'login' && styles.tabActive]}
-                onPress={() => setTab('login')}
-              >
-                <Text style={[styles.tabText, tab === 'login' && styles.tabTextActive]}>
-                  Sign In
+            {tab !== 'forgot' ? (
+              <View style={styles.tabs}>
+                <Pressable
+                  style={[styles.tab, tab === 'login' && styles.tabActive]}
+                  onPress={() => setTab('login')}
+                >
+                  <Text style={[styles.tabText, tab === 'login' && styles.tabTextActive]}>
+                    Sign In
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.tab, tab === 'register' && styles.tabActive]}
+                  onPress={() => setTab('register')}
+                >
+                  <Text style={[styles.tabText, tab === 'register' && styles.tabTextActive]}>
+                    Create Account
+                  </Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View style={styles.forgotHeader}>
+                <Text style={styles.forgotTitle}>🔑 Reset Password</Text>
+                <Text style={styles.forgotSub}>
+                  {forgotStep === 1
+                    ? 'Enter your registered email or phone to receive a 6-digit OTP code.'
+                    : `Enter the code sent to ${forgotTarget} and set a new password.`}
                 </Text>
-              </Pressable>
-              <Pressable
-                style={[styles.tab, tab === 'register' && styles.tabActive]}
-                onPress={() => setTab('register')}
-              >
-                <Text style={[styles.tabText, tab === 'register' && styles.tabTextActive]}>
-                  Create Account
-                </Text>
-              </Pressable>
-            </View>
+              </View>
+            )}
 
             {tab === 'login' ? (
               <>
@@ -182,12 +297,15 @@ export default function ProfileScreen({ navigation }: Props) {
                   onChangeText={setLoginPassword} secureTextEntry
                   placeholderTextColor={colors.textMuted}
                 />
+                <Pressable style={styles.forgotLink} onPress={() => { setTab('forgot'); setForgotStep(1); }}>
+                  <Text style={styles.forgotText}>Forgot password?</Text>
+                </Pressable>
                 <Pressable style={styles.primaryBtn} onPress={handleLogin} disabled={busy}>
                   {busy ? <ActivityIndicator color="#fff" /> :
                     <Text style={styles.primaryBtnText}>Sign In</Text>}
                 </Pressable>
               </>
-            ) : (
+            ) : tab === 'register' ? (
               <>
                 <TextInput
                   style={styles.input} placeholder="Full Name" value={regName}
@@ -218,9 +336,111 @@ export default function ProfileScreen({ navigation }: Props) {
                     <Text style={styles.primaryBtnText}>Create Account</Text>}
                 </Pressable>
               </>
+            ) : (
+              // Forgot password view
+              <>
+                {forgotStep === 1 ? (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Email or Phone number"
+                      value={forgotTarget}
+                      onChangeText={setForgotTarget}
+                      autoCapitalize="none"
+                      placeholderTextColor={colors.textMuted}
+                    />
+                    <Pressable style={styles.primaryBtn} onPress={handleSendForgotCode} disabled={busy}>
+                      {busy ? <ActivityIndicator color="#fff" /> :
+                        <Text style={styles.primaryBtnText}>Send Verification Code</Text>}
+                    </Pressable>
+                    <Pressable style={styles.linkBtn} onPress={() => setTab('login')}>
+                      <Text style={styles.linkBtnText}>Back to Sign In</Text>
+                    </Pressable>
+                  </>
+                ) : (
+                  <>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="6-digit Code (e.g. 123456)"
+                      value={forgotCode}
+                      onChangeText={setForgotCode}
+                      keyboardType="number-pad"
+                      maxLength={6}
+                      placeholderTextColor={colors.textMuted}
+                    />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="New Password (min 6 chars)"
+                      value={forgotNewPassword}
+                      onChangeText={setForgotNewPassword}
+                      secureTextEntry
+                      placeholderTextColor={colors.textMuted}
+                    />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Confirm New Password"
+                      value={forgotConfirmPassword}
+                      onChangeText={setForgotConfirmPassword}
+                      secureTextEntry
+                      placeholderTextColor={colors.textMuted}
+                    />
+                    <Pressable style={styles.primaryBtn} onPress={handleResetPassword} disabled={busy}>
+                      {busy ? <ActivityIndicator color="#fff" /> :
+                        <Text style={styles.primaryBtnText}>Reset Password</Text>}
+                    </Pressable>
+                    <Pressable style={styles.linkBtn} onPress={() => setForgotStep(1)}>
+                      <Text style={styles.linkBtnText}>Change Email / Phone</Text>
+                    </Pressable>
+                  </>
+                )}
+              </>
             )}
 
             <Pressable style={styles.cancelBtn} onPress={closeModal}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </Pressable>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Change Password Modal (when logged in) */}
+      <Modal visible={changePwdModalVisible} animationType="slide" transparent onRequestClose={closeChangePwdModal}>
+        <KeyboardAvoidingView
+          style={styles.modalBg}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <Pressable style={StyleSheet.absoluteFill} onPress={closeChangePwdModal} />
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>🔒 Change Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Current Password"
+              value={currPassword}
+              onChangeText={setCurrPassword}
+              secureTextEntry
+              placeholderTextColor={colors.textMuted}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="New Password (min 6 chars)"
+              value={newPassword}
+              onChangeText={setNewPassword}
+              secureTextEntry
+              placeholderTextColor={colors.textMuted}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm New Password"
+              value={confirmNewPassword}
+              onChangeText={setConfirmNewPassword}
+              secureTextEntry
+              placeholderTextColor={colors.textMuted}
+            />
+            <Pressable style={styles.primaryBtn} onPress={handleChangePassword} disabled={changePwdBusy}>
+              {changePwdBusy ? <ActivityIndicator color="#fff" /> :
+                <Text style={styles.primaryBtnText}>Update Password</Text>}
+            </Pressable>
+            <Pressable style={styles.cancelBtn} onPress={closeChangePwdModal}>
               <Text style={styles.cancelText}>Cancel</Text>
             </Pressable>
           </View>
@@ -302,4 +522,12 @@ const styles = StyleSheet.create({
   primaryBtnText: { color: '#fff', fontWeight: '800', fontSize: font.md },
   cancelBtn: { alignItems: 'center', paddingVertical: spacing.sm },
   cancelText: { color: colors.textMuted, fontWeight: '600', fontSize: font.base },
+  forgotLink: { alignSelf: 'flex-end', marginTop: -spacing.xs, marginBottom: spacing.xs },
+  forgotText: { color: colors.primary, fontSize: font.sm, fontWeight: '600' },
+  forgotHeader: { gap: 4, marginBottom: spacing.xs },
+  forgotTitle: { fontSize: font.lg, fontWeight: '800', color: colors.text },
+  forgotSub: { fontSize: font.sm, color: colors.textMuted },
+  linkBtn: { alignItems: 'center', paddingVertical: spacing.xs, marginTop: 4 },
+  linkBtnText: { color: colors.primary, fontWeight: '600', fontSize: font.sm },
+  modalTitle: { fontSize: font.lg, fontWeight: '800', color: colors.text, marginBottom: spacing.xs },
 });

@@ -7,13 +7,14 @@ interface AuthCtx {
   token: string | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, phone?: string) => Promise<void>;
+  register: (name: string, email: string, password: string, phone?: string, role?: string) => Promise<void>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const Ctx = createContext<AuthCtx>({
   user: null, token: null, loading: true,
-  login: async () => {}, register: async () => {}, logout: () => {},
+  login: async () => {}, register: async () => {}, logout: () => {}, refreshUser: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -47,8 +48,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     persist(tok, u);
   }, []);
 
-  const register = useCallback(async (name: string, email: string, password: string, phone?: string) => {
-    const { token: tok, user: u } = await authApi.register(name, email, password, phone);
+  const register = useCallback(async (name: string, email: string, password: string, phone?: string, role?: string) => {
+    const { token: tok, user: u } = await authApi.register(name, email, password, phone, role);
     persist(tok, u);
   }, []);
 
@@ -59,7 +60,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-  return <Ctx.Provider value={{ user, token, loading, login, register, logout }}>{children}</Ctx.Provider>;
+  const refreshUser = useCallback(async () => {
+    try {
+      const { user: u } = await authApi.me();
+      setUser(u);
+    } catch { /* ignore */ }
+  }, []);
+
+  return <Ctx.Provider value={{ user, token, loading, login, register, logout, refreshUser }}>{children}</Ctx.Provider>;
 }
 
 export const useAuth = () => useContext(Ctx);

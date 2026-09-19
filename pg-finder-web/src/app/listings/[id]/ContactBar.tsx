@@ -8,8 +8,11 @@ export default function ContactBar({ listing }: { listing: Listing }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const phone = listing.owner_phone;
-  const waLink = phone ? `https://wa.me/91${phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I'm interested in your listing: ${listing.title}`)}` : null;
+  const rawPhone = listing.owner?.phone ?? listing.owner_phone;
+  const digitsOnly = rawPhone ? rawPhone.replace(/\D/g, '') : null;
+  const phone = rawPhone;
+  const waPhone = digitsOnly ? (digitsOnly.length === 10 ? `91${digitsOnly}` : digitsOnly) : null;
+  const waLink = waPhone ? `https://wa.me/${waPhone}?text=${encodeURIComponent(`Hi, I'm interested in your listing: ${listing.title}`)}` : null;
 
   const toggleSave = async () => {
     setSaving(true);

@@ -1,57 +1,194 @@
-.page { padding: 40px 0 100px; }
+/* ══════════════════════════════════════════════════════════
+   Listing Detail — Synchronized to PGFinder Design System
+   ══════════════════════════════════════════════════════════ */
 
-/* Gallery */
-.gallery { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 40px; height: 420px; }
-.mainPhoto { height: 100%; }
-.mainImg { width: 100%; height: 100%; object-fit: cover; }
-.thumbs { display: grid; grid-template-rows: repeat(2, 1fr); gap: 8px; }
-.thumb { position: relative; overflow: hidden; }
-.thumbImg { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-.thumb:hover .thumbImg { transform: scale(1.05); }
-.thumbMore { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff; }
-.noPhoto { height: 300px; display: flex; align-items: center; justify-content: center; font-size: 80px; background: var(--surface); border-radius: var(--radius-xl); margin-bottom: 40px; }
+.page { padding: 32px 0 100px; }
 
-/* Layout */
-.layout { display: grid; grid-template-columns: 1fr 340px; gap: 32px; align-items: start; }
+/* Gallery is handled by ListingGallery.module.css */
 
-/* Main */
+/* ── Breadcrumb ──────────────────────────────────────────── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+
+.breadcrumbLink {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+.breadcrumbLink:hover { color: var(--primary-light); }
+.breadcrumbSep { color: var(--text-faint); }
+.breadcrumbCurrent { color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px; }
+
+/* ── Layout ──────────────────────────────────────────────── */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 32px;
+  align-items: start;
+  margin-top: 28px;
+}
+
+/* ── Main content ────────────────────────────────────────── */
 .listingHeader { margin-bottom: 24px; }
-.badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.title { font-size: clamp(24px, 4vw, 36px); font-weight: 900; color: var(--text); letter-spacing: -0.5px; margin-bottom: 8px; }
-.address { font-size: 15px; color: var(--text-muted); }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.title {
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+.address {
+  font-size: 15px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
-.rentCard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; }
-.rent { font-size: 36px; font-weight: 900; color: var(--text); letter-spacing: -1px; }
+/* ── Rent Card ───────────────────────────────────────────── */
+.rentCard {
+  background: var(--surface);
+  border: 1.5px solid rgba(13,148,136,0.25);
+  border-radius: var(--radius-xl);
+  padding: 22px 28px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.rentCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+.rentLeft { display: flex; align-items: baseline; gap: 4px; }
+.rent {
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--primary-light);
+  letter-spacing: -2px;
+}
 .rentPer { font-size: 15px; color: var(--text-muted); }
-.deposit { font-size: 14px; color: var(--text-muted); background: var(--bg); padding: 8px 16px; border-radius: var(--radius-pill); }
+.deposit {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--bg);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+}
 
+/* ── Sections ────────────────────────────────────────────── */
 .section { margin-bottom: 36px; }
-.sectionTitle { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 16px; }
-.description { font-size: 15px; color: var(--text-muted); line-height: 1.8; }
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 16px;
+  padding-left: 14px;
+  border-left: 3px solid var(--primary);
+  line-height: 1;
+}
+.description {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
 
+/* ── Amenities ───────────────────────────────────────────── */
 .amenitiesGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.amenityItem { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; }
-.amenityCheck { color: var(--green); font-weight: 700; }
+
+.amenityItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.amenityItem:hover {
+  border-color: rgba(34,197,94,0.3);
+  background: rgba(34,197,94,0.05);
+}
+
+.amenityCheckWrap {
+  width: 26px; height: 26px;
+  border-radius: var(--radius-sm);
+  background: rgba(34,197,94,0.12);
+  border: 1px solid rgba(34,197,94,0.2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.amenityCheck { color: var(--green); font-weight: 700; font-size: 13px; }
 .amenityLabel { font-size: 13px; color: var(--text-muted); text-transform: capitalize; }
 
-.mapPlaceholder { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; font-size: 14px; color: var(--text-muted); text-align: center; }
-.mapPlaceholder span { font-size: 40px; }
-
-/* Sidebar */
+/* ── Sidebar ─────────────────────────────────────────────── */
 .sidebar { position: sticky; top: calc(var(--nav-h) + 24px); }
 
-.hostCard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-.hostAvatar { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; flex-shrink: 0; }
-.hostLabel { font-size: 12px; color: var(--text-faint); }
-.hostName { font-size: 16px; font-weight: 700; color: var(--text); }
+.hostCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
 
+.hostCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  opacity: 0.7;
+}
+
+.hostAvatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(13,148,136,0.2), 0 6px 16px rgba(13,148,136,0.25);
+}
+
+.hostLabel { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1px; }
+.hostName { font-size: 17px; font-weight: 700; color: var(--text); margin-top: 3px; }
+
+/* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .gallery { grid-template-columns: 1fr; height: 280px; }
-  .thumbs { display: none; }
   .layout { grid-template-columns: 1fr; }
   .sidebar { position: static; }
   .amenitiesGrid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 560px) {
   .amenitiesGrid { grid-template-columns: 1fr; }
+  .rentCard { flex-direction: column; align-items: flex-start; gap: 12px; }
 }

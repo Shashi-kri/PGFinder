@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import styles from './Navbar.module.css';
@@ -11,6 +11,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { user, logout } = useAuth();
   const { theme, toggle } = useTheme();
@@ -22,14 +23,30 @@ export default function Navbar() {
   }, []);
 
   // Close menus on route change
-  useEffect(() => { setMenuOpen(false); setUserMenuOpen(false); }, [pathname]);
+  const [prevPath, setPrevPath] = useState(pathname);
+  if (prevPath !== pathname) {
+    setPrevPath(pathname);
+    setMenuOpen(false);
+    setUserMenuOpen(false);
+  }
 
   const navLinks = [
-    { href: '/listings', label: 'Browse' },
-    { href: '/listings?type=pg', label: 'PGs' },
-    { href: '/listings?type=flat', label: 'Flats' },
-    { href: '/listings?type=flatmate', label: 'Flatmates' },
+    { href: '/listings', label: 'Browse', type: null },
+    { href: '/listings?type=pg', label: 'PGs', type: 'pg' },
+    { href: '/listings?type=flat', label: 'Flats', type: 'flat' },
+    { href: '/listings?type=flatmate', label: 'Flatmates', type: 'flatmate' },
+    { href: '/listings?type=mess', label: 'Mess', type: 'mess' },
+    { href: '/matches', label: 'Matches ✨', type: 'matches' },
   ];
+
+  // A link is active when its path matches AND (no type means no type param, or type matches current)
+  const isLinkActive = (link: { href: string; type: string | null }) => {
+    if (link.type === 'matches') return pathname === '/matches';
+    if (pathname !== '/listings') return false;
+    const currentType = searchParams.get('type');
+    if (link.type === null) return !currentType; // "Browse" active only when no type filter
+    return currentType === link.type;
+  };
 
   const handleLogout = () => { logout(); router.push('/'); };
 
@@ -46,7 +63,7 @@ export default function Navbar() {
         <div className={styles.links}>
           {navLinks.map((l) => (
             <Link key={l.href} href={l.href}
-              className={`${styles.link} ${pathname === l.href ? styles.active : ''}`}>
+              className={`${styles.link} ${isLinkActive(l) ? styles.active : ''}`}>
               {l.label}
             </Link>
           ))}
@@ -62,7 +79,11 @@ export default function Navbar() {
           {user ? (
             <div className={styles.userMenu}>
               <button className={styles.avatarBtn} onClick={() => setUserMenuOpen(!userMenuOpen)}>
-                <span className={styles.avatarCircle}>{user.name[0].toUpperCase()}</span>
+                {user.photo_url ? (
+                  <img src={user.photo_url} alt={user.name} className={styles.avatarPhoto} />
+                ) : (
+                  <span className={styles.avatarCircle}>{user.name[0].toUpperCase()}</span>
+                )}
                 <span className={styles.userName}>{user.name.split(' ')[0]}</span>
                 <span className={styles.chevDown}>▾</span>
               </button>
@@ -73,6 +94,8 @@ export default function Navbar() {
                     <p className={styles.dropdownEmail}>{user.email}</p>
                   </div>
                   <div className={styles.dropdownDivider} />
+                  <Link href="/matches" className={styles.dropdownItem}>✨ Flatmate Matches</Link>
+                  <Link href="/profile/seeker" className={styles.dropdownItem}>🤝 Seeker Profile</Link>
                   <Link href="/dashboard" className={styles.dropdownItem}>🏠 My Listings</Link>
                   <Link href="/saved" className={styles.dropdownItem}>❤️ Saved Places</Link>
                   <Link href="/profile" className={styles.dropdownItem}>👤 Profile</Link>
