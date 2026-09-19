@@ -10,6 +10,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -21,6 +22,9 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Mark as mounted so theme-dependent UI renders correctly on client
+  useEffect(() => { setMounted(true); }, []);
 
   // Close menus on route change
   const [prevPath, setPrevPath] = useState(pathname);
@@ -88,10 +92,11 @@ export default function Navbar() {
           <button
             className={styles.themeBtn}
             onClick={toggle}
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            aria-label={mounted ? (theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode') : 'Toggle theme'}
+            title={mounted ? (theme === 'dark' ? 'Light mode' : 'Dark mode') : 'Theme'}
+            suppressHydrationWarning
           >
-            {theme === 'dark' ? '☀️' : '🌙'}
+            {mounted ? (theme === 'dark' ? '☀️' : '🌙') : '🌙'}
           </button>
           <Link href="/dashboard/new" className={styles.postBtn}>
             + List Property
